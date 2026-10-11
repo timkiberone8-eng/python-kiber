@@ -9,10 +9,10 @@
 
 import psycopg2
 
-# 1. Создать базу. Как в шаге 2 урока 9: подключаемся к kiber
+# 1. Создать базу. Как в шаге 2 урока 9: подключаемся к postgres
 # с autocommit и оттуда создаём новую базу.
 connection = psycopg2.connect(
-    dbname="kiber",
+    dbname="postgres",
     user="postgres",
     password="postgres",
     host="127.0.0.1",

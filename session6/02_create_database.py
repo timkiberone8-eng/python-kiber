@@ -3,9 +3,9 @@
 # Запуск из папки session6:
 #     python 02_create_database.py
 #
-# Подключаемся к kiber (как в шаге 1), а оттуда создаём отдельную базу
-# sales_data: в ней будут продажи. Отличия от слайда те же, что в шаге 1:
-# база kiber и пароль postgres вместо test2 и 1111.
+# Подключаемся к служебной базе postgres (как в шаге 1), а оттуда создаём
+# отдельную базу sales_data: в ней будут продажи. Отличия от слайда те же,
+# что в шаге 1: база postgres и пароль postgres вместо test2 и 1111.
 #
 # Запускать можно сколько угодно раз: DROP DATABASE IF EXISTS сначала
 # удаляет старую sales_data. Но вместе с ней пропадают таблица и продажи,
@@ -14,7 +14,7 @@
 import psycopg2
 
 connection = psycopg2.connect(
-    dbname="kiber",
+    dbname="postgres",
     user="postgres",
     password="postgres",
     host="127.0.0.1",
