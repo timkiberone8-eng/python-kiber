@@ -1,0 +1,275 @@
+---
+layout: default
+title: Олимпиадные задачи
+---
+<style>
+  .check { margin: 0 0 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--soft); }
+  .check .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 0 10px; }
+  .check label { color: var(--muted); }
+  .check input { font: 1em Consolas, "Cascadia Mono", monospace; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; width: 7em; }
+  .check input.wide { flex: 1; min-width: 14em; }
+  .check input:focus { outline: 2px solid var(--link); outline-offset: 1px; }
+  .check button { font: inherit; color: var(--bg); background: var(--link); border: 0; border-radius: 6px;
+    padding: 7px 16px; cursor: pointer; }
+  .check button:hover { filter: brightness(1.1); }
+  .verdict { font-weight: 600; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.bad { color: light-dark(#cf222e, #f85149); }
+  .check .msg { margin: 0; }
+  .open { display: inline-block; padding: 8px 16px; border: 1px solid var(--link); border-radius: 6px; text-decoration: none; }
+</style>
+
+<h1>Олимпиадные задачи</h1>
+
+<p>Задачи из банка подготовки к внутренней олимпиаде KIBERone для старших групп.</p>
+
+<p>Решений здесь нет. Под каждой задачей поле для ответа: страница скажет только «верно» или «не верно», сам ответ она не покажет. Если не сходится, открой «Не сходится?»: там сказано, где обычно ошибаются.</p>
+
+<h2>1. Монетки</h2>
+
+<p>На столе лежат восемь монет одним рядком:</p>
+
+<table>
+  <tr><td>○</td><td>○</td><td>○</td><td>○</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
+  <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr>
+</table>
+
+<p>За один ход можно взять одну монету, перенести её через две соседние монеты (монеты, а не стопки!) и положить на третью. За четыре хода нужно получить четыре стопки по две монеты в каждой. Как?</p>
+
+<p><a class="open" href="https://timkiberone8-eng.github.io/olymp/tasks/coins.html" target="_blank" rel="noopener">Решать на интерактивной странице →</a></p>
+
+<p>Там монеты можно двигать мышкой, а неправильный ход страница не пропустит.</p>
+
+<details>
+<summary>Не сходится?</summary>
+<ul>
+  <li>Перепрыгнул стопку как одну монету? Так нельзя: в условии сказано «монеты, а не стопки».</li>
+  <li>Кажется, что решения нет, потому что мешает пустое место? Пустое место не монета, через него прыгать можно.</li>
+  <li>Получилась стопка из трёх монет? После этого четыре стопки по две уже не собрать: вернись к этому ходу.</li>
+  <li>Застрял на третьем или четвёртом ходу? Ошибка, скорее всего, в самом первом ходе: попробуй начать по-другому.</li>
+</ul>
+</details>
+
+<h2>2. Районы, кварталы</h2>
+
+<p>План города представляет собой прямоугольник размером n × m километров, разбитых на кварталы: квадраты со стороной 1 километр. Между кварталами, а также по границе города проложены дороги. Например, если n = 2, m = 3, то план дорог следующий:</p>
+
+<pre><code>+---+---+---+
+|   |   |   |
++---+---+---+
+|   |   |   |
++---+---+---+</code></pre>
+
+<p>Определи суммарную длину всех дорог в городе в километрах. Единицу измерения указывать не нужно.</p>
+
+<p>Ответом к этой задаче является некоторое выражение, которое может содержать целые числа, переменные n и m, операции сложения (обозначается <code>+</code>), вычитания (обозначается <code>-</code>), умножения (обозначается <code>*</code>) и круглые скобки для изменения порядка действий. Запись вида <code>2n</code> для обозначения произведения числа 2 и переменной n неверная, нужно писать <code>2 * n</code>.</p>
+
+<p>Пример правильного (по форме записи) выражения: <code>n + (m - 1) * 2</code></p>
+
+<p>На плане n = 2 это два ряда кварталов сверху вниз, m = 3 это три квартала в ряду. Каждая сторона квадрата на плане это дорога длиной 1 километр.</p>
+
+<div class="check" id="rayony">
+  <div class="row">
+    <label for="rayony-f">Формула:</label>
+    <input class="wide" id="rayony-f" autocomplete="off" spellcheck="false" placeholder="например, n + (m - 1) * 2">
+    <button type="button">Проверить</button>
+  </div>
+  <p class="msg"></p>
+</div>
+
+<p>Страница проверяет формулу на нескольких городах разной формы, а не только на плане из условия.</p>
+
+<details>
+<summary>Не сходится?</summary>
+<ul>
+  <li>Начни с самого маленького города, 1 × 1: один квартал, вокруг него 4 километра дороги. Твоя формула при n = 1 и m = 1 должна дать 4.</li>
+  <li>Совпало на одном городе ещё не значит, что формула верна: бывает, что формула случайно сходится на одном плане и ошибается на другом. Нарисуй 1 × 3, 2 × 2 и 3 × 4 и посчитай дороги по одному километру.</li>
+  <li>В ответе нельзя делить, есть только <code>+</code>, <code>-</code>, <code>*</code> и скобки.</li>
+</ul>
+</details>
+
+<h2>3. Маленький класс</h2>
+
+<p>В классе N учеников. Учитель опрашивает сначала всех учащихся с нечётными номерами (1, 3, 5, ...), затем всех с чётными номерами (2, 4, 6, ...). Андрей, имеющий номер K по журналу, хочет узнать, какой по порядку вопрос достанется ему. Как по N и K найти номер его вопроса?</p>
+
+<p>Числа такие: 1 ≤ N ≤ 1000, 1 ≤ K ≤ N.</p>
+
+<p>Примеры:</p>
+
+<table>
+  <tr><th>N</th><th>K</th><th>Номер вопроса</th></tr>
+  <tr><td>10</td><td>7</td><td>4</td></tr>
+  <tr><td>10</td><td>6</td><td>8</td></tr>
+</table>
+
+<p>В банке это задача на программу: программа получает N и K и печатает номер вопроса. Писать программу не обязательно: найди правило, по которому из N и K получается номер, и проверь его здесь.</p>
+
+<div class="check" id="klass">
+  <div class="row"><label>N = 11, K = 6, номер вопроса:</label><input inputmode="numeric" autocomplete="off" data-h="95567b25a0c19b96"><span class="verdict"></span></div>
+  <div class="row"><label>N = 7, K = 7, номер вопроса:</label><input inputmode="numeric" autocomplete="off" data-h="3aee9a20950f5a65"><span class="verdict"></span></div>
+  <div class="row"><label>N = 1000, K = 998, номер вопроса:</label><input inputmode="numeric" autocomplete="off" data-h="8b61b7b531c7a42c"><span class="verdict"></span></div>
+  <button type="button">Проверить</button>
+</div>
+
+<details>
+<summary>Не сходится?</summary>
+<ul>
+  <li>Правило сошлось на обоих примерах? Это ещё не всё: в примерах N = 10, чётное. Проверь класс, где учеников нечётное число.</li>
+  <li>Для нечётного K выходит на 1 меньше? Проверь K = 1: его спрашивают первым.</li>
+  <li>Выпиши на бумаге очередь для класса из 7 человек и сверь со своим правилом для каждого K.</li>
+</ul>
+</details>
+
+<h2>4. Шаолиньский Даня</h2>
+
+<p>Даня готовится к спортивным соревнованиям. Он тренируется по системе шаолиньских монахов. Тренировка должна состоять из N подходов, каждый из которых длится M минут и S секунд, между каждой парой подряд идущих подходов должен быть перерыв длительностью P секунд.</p>
+
+<p>Помоги Дане определить, сколько всего времени займёт тренировка.</p>
+
+<p>Числа такие:</p>
+
+<ul>
+  <li>N (1 ≤ N ≤ 100): количество подходов;</li>
+  <li>M (0 ≤ M ≤ 59): количество минут в одном подходе;</li>
+  <li>S (0 ≤ S ≤ 59): количество секунд в одном подходе;</li>
+  <li>P (0 ≤ P ≤ 120): длительность паузы между подходами, выраженная в секундах.</li>
+</ul>
+
+<p>Гарантируется, что один подход занимает ненулевое время.</p>
+
+<p>Ответ: два целых числа, продолжительность тренировки в минутах и секундах. Первое число должно быть равно количеству полных минут в тренировке. Второе число должно быть равно количеству секунд в тренировке, находящемуся в диапазоне от 0 до 59 включительно.</p>
+
+<p>Пример:</p>
+
+<table>
+  <tr><th>N</th><th>M</th><th>S</th><th>P</th><th>Ответ</th></tr>
+  <tr><td>4</td><td>3</td><td>24</td><td>70</td><td>17 минут 6 секунд</td></tr>
+</table>
+
+<p>Это тоже задача на программу, и её тоже можно решать без программы: найди, как посчитать ответ для любых N, M, S и P.</p>
+
+<div class="check" id="danya">
+  <div class="row"><label>N = 1, M = 0, S = 59, P = 120:</label><input inputmode="numeric" autocomplete="off" aria-label="минут"><label>мин</label><input inputmode="numeric" autocomplete="off" aria-label="секунд"><label>сек</label><span class="verdict" data-h="0306fab426383799"></span></div>
+  <div class="row"><label>N = 2, M = 1, S = 30, P = 60:</label><input inputmode="numeric" autocomplete="off" aria-label="минут"><label>мин</label><input inputmode="numeric" autocomplete="off" aria-label="секунд"><label>сек</label><span class="verdict" data-h="7733286de5608879"></span></div>
+  <div class="row"><label>N = 100, M = 59, S = 59, P = 120:</label><input inputmode="numeric" autocomplete="off" aria-label="минут"><label>мин</label><input inputmode="numeric" autocomplete="off" aria-label="секунд"><label>сек</label><span class="verdict" data-h="73efa43b9ab6820d"></span></div>
+  <button type="button">Проверить</button>
+</div>
+
+<details>
+<summary>Не сходится?</summary>
+<ul>
+  <li>Сначала проверь своё правило на примере из таблицы: должно выйти 17 минут 6 секунд.</li>
+  <li>Вышло 18 минут 16 секунд? Посчитай, сколько перерывов между четырьмя подходами.</li>
+  <li>Вышло дробное число минут, например 17,1? Десятые доли минуты это не секунды. Переведи всё в секунды и только потом раздели на минуты и секунды.</li>
+</ul>
+</details>
+
+<h2>Запасная задача: Лягушки и кузнечики</h2>
+
+<p>В крайних клетках полоски шириной в одну клетку и длиной в N клеток сидят лягушка и кузнечик: лягушка в клетке № 1, кузнечик в клетке № N. Каждую секунду лягушка прыгает в сторону кузнечика, и одновременно кузнечик прыгает в сторону лягушки. Лягушка может прыгать только на две или на три клетки, кузнечик: только на одну или на две клетки. За какое наименьшее время они смогут оказаться в одной клетке?</p>
+
+<p>Длина полоски: 2 ≤ N ≤ 2 · 10⁹.</p>
+
+<p>Ответ: минимальное количество секунд, через которое они встретятся. Если они не смогут оказаться в одной клетке, ответ -1.</p>
+
+<p>Примеры:</p>
+
+<table>
+  <tr><th>N</th><th>Ответ</th></tr>
+  <tr><td>5</td><td>1</td></tr>
+  <tr><td>9</td><td>2</td></tr>
+</table>
+
+<div class="check" id="frogs">
+  <div class="row"><label>N = 3, ответ:</label><input autocomplete="off" data-h="f15b00bb9b4ea2bd"><span class="verdict"></span></div>
+  <div class="row"><label>N = 12, ответ:</label><input autocomplete="off" data-h="16af6cc9cdaa6aaf"><span class="verdict"></span></div>
+  <div class="row"><label>N = 2000000000, ответ:</label><input autocomplete="off" data-h="014b708885514d10"><span class="verdict"></span></div>
+  <button type="button">Проверить</button>
+</div>
+
+<details>
+<summary>Не сходится?</summary>
+<ul>
+  <li>Нарисуй полоски из 2, 3 и 4 клеток и пройди прыжки на бумаге.</li>
+  <li>Лягушка и кузнечик не обязаны каждый раз прыгать на самое большое расстояние.</li>
+  <li>Подумай, всегда ли они вообще могут встретиться. Для этого случая в условии есть ответ -1.</li>
+  <li>N бывает до двух миллиардов: прыжки руками не пройти, нужно правило.</li>
+</ul>
+</details>
+
+<script>
+  const SALT = "kiber-olymp-14";
+
+  async function hash(answer) {
+    const bytes = new TextEncoder().encode(`${SALT}|${answer}`);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+  }
+
+  const clean = (value) => value.replace(/\s+/g, "");
+
+  function show(el, ok, text) {
+    el.textContent = text;
+    el.className = `${el.classList.contains("msg") ? "msg " : ""}verdict ${ok ? "ok" : "bad"}`;
+  }
+
+  function onCheck(box, run) {
+    box.querySelector("button").addEventListener("click", run);
+    box.querySelectorAll("input").forEach((input) =>
+      input.addEventListener("keydown", (e) => e.key === "Enter" && run()));
+  }
+
+  for (const id of ["klass", "frogs"]) {
+    const box = document.getElementById(id);
+    onCheck(box, () => box.querySelectorAll(".row").forEach(async (row) => {
+      const input = row.querySelector("input");
+      const verdict = row.querySelector(".verdict");
+      const answer = clean(input.value);
+      if (!answer) return show(verdict, false, "впиши ответ");
+      const ok = (await hash(answer)) === input.dataset.h;
+      show(verdict, ok, ok ? "верно" : "не верно");
+    }));
+  }
+
+  const danya = document.getElementById("danya");
+  onCheck(danya, () => danya.querySelectorAll(".row").forEach(async (row) => {
+    const [min, sec] = [...row.querySelectorAll("input")].map((input) => clean(input.value));
+    const verdict = row.querySelector(".verdict");
+    if (!min || !sec) return show(verdict, false, "впиши минуты и секунды");
+    const ok = (await hash(`${Number(min)}:${Number(sec)}`)) === verdict.dataset.h;
+    show(verdict, ok, ok ? "верно" : "не верно");
+  }));
+
+  const RAYONY_SIZES = [[1, 1], [2, 3], [3, 3], [1, 3], [2, 2], [4, 7], [10, 1], [5, 8]];
+  const RAYONY_HASH = "4454ce1f676d63f4";
+  const rayony = document.getElementById("rayony");
+  const rayonyMsg = rayony.querySelector(".msg");
+
+  onCheck(rayony, async () => {
+    const formula = rayony.querySelector("input").value.trim();
+    if (!formula) return show(rayonyMsg, false, "Впиши формулу.");
+    if (!/^[0-9nm+\-*()\s]+$/.test(formula)) {
+      return show(rayonyMsg, false, "Можно только n, m, целые числа, знаки + - * и скобки.");
+    }
+    if (/\d\s*[nm(]|[nm)]\s*[\dnm(]/.test(formula)) {
+      return show(rayonyMsg, false, "Между числом, буквой и скобкой нужен знак *: пиши 2 * n, а не 2n.");
+    }
+    if (formula.includes("**")) return show(rayonyMsg, false, "Знака ** в ответе нет, только + - *.");
+    let city;
+    try {
+      city = new Function("n", "m", `return (${formula});`);
+      city(1, 1);
+    } catch {
+      return show(rayonyMsg, false, "Не получается прочитать формулу: проверь скобки и знаки.");
+    }
+    const roads = RAYONY_SIZES.map(([n, m]) => city(n, m));
+    if (roads.some((r) => !Number.isInteger(r))) {
+      return show(rayonyMsg, false, "Не получается посчитать формулу: проверь скобки и знаки.");
+    }
+    if ((await hash(roads.join(","))) === RAYONY_HASH) return show(rayonyMsg, true, "Верно!");
+    if (roads[0] !== 4) return show(rayonyMsg, false, `Не верно: на городе 1 × 1 формула даёт ${roads[0]}, а дорог там 4.`);
+    if (roads[1] !== 17) return show(rayonyMsg, false, `Не верно: на плане из условия, 2 × 3, формула даёт ${roads[1]}, а дорог там 17.`);
+    show(rayonyMsg, false, "Не верно: на 1 × 1 и на плане из условия сходится, а на каком-то другом городе нет.");
+  });
+</script>
