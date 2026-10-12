@@ -2,23 +2,7 @@
 layout: default
 title: Олимпиадные задачи
 ---
-<style>
-  .check { margin: 0 0 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--soft); }
-  .check .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 0 10px; }
-  .check label { color: var(--muted); }
-  .check input { font: 1em Consolas, "Cascadia Mono", monospace; color: var(--ink); background: var(--bg);
-    border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; width: 7em; }
-  .check input.wide { flex: 1; min-width: 14em; }
-  .check input:focus { outline: 2px solid var(--link); outline-offset: 1px; }
-  .check button { font: inherit; color: var(--bg); background: var(--link); border: 0; border-radius: 6px;
-    padding: 7px 16px; cursor: pointer; }
-  .check button:hover { filter: brightness(1.1); }
-  .verdict { font-weight: 600; }
-  .verdict.ok { color: var(--ok); }
-  .verdict.bad { color: light-dark(#cf222e, #f85149); }
-  .check .msg { margin: 0; }
-  .open { display: inline-block; padding: 8px 16px; border: 1px solid var(--link); border-radius: 6px; text-decoration: none; }
-</style>
+{% include olymp-style.html %}
 
 <h1>Олимпиадные задачи</h1>
 
@@ -116,56 +100,7 @@ for n in range(1, 4):
 </details>
 
 <h2>3. Маленький класс</h2>
-
-<p>В классе N учеников. Учитель опрашивает сначала всех учащихся с нечётными номерами (1, 3, 5, ...), затем всех с чётными номерами (2, 4, 6, ...). Андрей, имеющий номер K по журналу, хочет узнать, какой по порядку вопрос достанется ему. Как по N и K найти номер его вопроса?</p>
-
-<p>Числа такие: 1 ≤ N ≤ 1000, 1 ≤ K ≤ N.</p>
-
-<p>Примеры:</p>
-
-<table>
-  <tr><th>N</th><th>K</th><th>Номер вопроса</th></tr>
-  <tr><td>10</td><td>7</td><td>4</td></tr>
-  <tr><td>10</td><td>6</td><td>8</td></tr>
-</table>
-
-<p>В банке это задача на программу: программа получает N и K и печатает номер вопроса. Писать программу не обязательно: найди правило, по которому из N и K получается номер, и проверь его здесь.</p>
-
-<div class="check" id="klass">
-  <div class="row"><label>N = 11, K = 6, номер вопроса:</label><input inputmode="numeric" autocomplete="off" data-h="95567b25a0c19b96"><span class="verdict"></span></div>
-  <div class="row"><label>N = 7, K = 7, номер вопроса:</label><input inputmode="numeric" autocomplete="off" data-h="3aee9a20950f5a65"><span class="verdict"></span></div>
-  <div class="row"><label>N = 1000, K = 998, номер вопроса:</label><input inputmode="numeric" autocomplete="off" data-h="8b61b7b531c7a42c"><span class="verdict"></span></div>
-  <button type="button">Проверить</button>
-</div>
-
-<details>
-<summary>Не сходится?</summary>
-<ul>
-  <li>Правило сошлось на обоих примерах? Это ещё не всё: в примерах N = 10, чётное. Проверь класс, где учеников нечётное число.</li>
-  <li>Для нечётного K выходит на 1 меньше? Проверь K = 1: его спрашивают первым.</li>
-  <li>Выпиши на бумаге очередь для класса из 7 человек и сверь со своим правилом для каждого K.</li>
-</ul>
-</details>
-
-<details>
-<summary>Решил? Теперь на Python</summary>
-
-<p>Чётное число или нет, в Python узнают остатком от деления на 2: <code>K % 2</code> равно 0 у чётных и 1 у нечётных. Впиши своё правило вместо многоточий:</p>
-<div class="copyable"><div class="highlighter-rouge">
-{% highlight python %}
-N = 10
-K = 7
-
-if K % 2 == 1:
-    question = ...  # номер вопроса для нечётного K
-else:
-    question = ...  # номер вопроса для чётного K
-print(question)
-{% endhighlight %}
-</div></div>
-<p>Должно напечатать 4. Потом поменяй N и K на числа из проверки выше и сверь.</p>
-
-</details>
+{% include olymp-klass.html %}
 
 <h2>4. Шаолиньский Даня</h2>
 
@@ -263,40 +198,8 @@ print(total // 60, total % 60)
 </ul>
 </details>
 
+{% include olymp-check.html %}
 <script>
-  const SALT = "kiber-olymp-14";
-
-  async function hash(answer) {
-    const bytes = new TextEncoder().encode(`${SALT}|${answer}`);
-    const digest = await crypto.subtle.digest("SHA-256", bytes);
-    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
-  }
-
-  const clean = (value) => value.replace(/\s+/g, "");
-
-  function show(el, ok, text) {
-    el.textContent = text;
-    el.className = `${el.classList.contains("msg") ? "msg " : ""}verdict ${ok ? "ok" : "bad"}`;
-  }
-
-  function onCheck(box, run) {
-    box.querySelector("button").addEventListener("click", run);
-    box.querySelectorAll("input").forEach((input) =>
-      input.addEventListener("keydown", (e) => e.key === "Enter" && run()));
-  }
-
-  for (const id of ["klass", "frogs"]) {
-    const box = document.getElementById(id);
-    onCheck(box, () => box.querySelectorAll(".row").forEach(async (row) => {
-      const input = row.querySelector("input");
-      const verdict = row.querySelector(".verdict");
-      const answer = clean(input.value);
-      if (!answer) return show(verdict, false, "впиши ответ");
-      const ok = (await hash(answer)) === input.dataset.h;
-      show(verdict, ok, ok ? "верно" : "не верно");
-    }));
-  }
-
   const danya = document.getElementById("danya");
   onCheck(danya, () => danya.querySelectorAll(".row").forEach(async (row) => {
     const [min, sec] = [...row.querySelectorAll("input")].map((input) => clean(input.value));

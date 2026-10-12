@@ -1,0 +1,50 @@
+
+<p>В классе N учеников. Учитель опрашивает сначала всех учащихся с нечётными номерами (1, 3, 5, ...), затем всех с чётными номерами (2, 4, 6, ...). Андрей, имеющий номер K по журналу, хочет узнать, какой по порядку вопрос достанется ему. Как по N и K найти номер его вопроса?</p>
+
+<p>Числа такие: 1 ≤ N ≤ 1000, 1 ≤ K ≤ N.</p>
+
+<p>Примеры:</p>
+
+<table>
+  <tr><th>N</th><th>K</th><th>Номер вопроса</th></tr>
+  <tr><td>10</td><td>7</td><td>4</td></tr>
+  <tr><td>10</td><td>6</td><td>8</td></tr>
+</table>
+
+<p>В банке это задача на программу: программа получает N и K и печатает номер вопроса. Писать программу не обязательно: найди правило, по которому из N и K получается номер, и проверь его здесь.</p>
+
+<div class="check" id="klass">
+  <div class="row"><label>N = 11, K = 6, номер вопроса:</label><input inputmode="numeric" autocomplete="off" data-h="95567b25a0c19b96"><span class="verdict"></span></div>
+  <div class="row"><label>N = 7, K = 7, номер вопроса:</label><input inputmode="numeric" autocomplete="off" data-h="3aee9a20950f5a65"><span class="verdict"></span></div>
+  <div class="row"><label>N = 1000, K = 998, номер вопроса:</label><input inputmode="numeric" autocomplete="off" data-h="8b61b7b531c7a42c"><span class="verdict"></span></div>
+  <button type="button">Проверить</button>
+</div>
+
+<details>
+<summary>Не сходится?</summary>
+<ul>
+  <li>Правило сошлось на обоих примерах? Это ещё не всё: в примерах N = 10, чётное. Проверь класс, где учеников нечётное число.</li>
+  <li>Для нечётного K выходит на 1 меньше? Проверь K = 1: его спрашивают первым.</li>
+  <li>Выпиши на бумаге очередь для класса из 7 человек и сверь со своим правилом для каждого K.</li>
+</ul>
+</details>
+
+<details>
+<summary>Решил? Теперь на Python</summary>
+
+<p>Чётное число или нет, в Python узнают остатком от деления на 2: <code>K % 2</code> равно 0 у чётных и 1 у нечётных. Впиши своё правило вместо многоточий:</p>
+<div class="copyable"><div class="highlighter-rouge">
+{% highlight python %}
+N = 10
+K = 7
+
+if K % 2 == 1:
+    question = ...  # номер вопроса для нечётного K
+else:
+    question = ...  # номер вопроса для чётного K
+print(question)
+{% endhighlight %}
+</div></div>
+<p>Должно напечатать 4. Потом поменяй N и K на числа из проверки выше и сверь.</p>
+
+</details>

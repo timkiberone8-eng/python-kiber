@@ -1,0 +1,17 @@
+<style>
+  .check { margin: 0 0 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--soft); }
+  .check .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 0 10px; }
+  .check label { color: var(--muted); }
+  .check input { font: 1em Consolas, "Cascadia Mono", monospace; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; width: 7em; }
+  .check input.wide { flex: 1; min-width: 14em; }
+  .check input:focus { outline: 2px solid var(--link); outline-offset: 1px; }
+  .check button { font: inherit; color: var(--bg); background: var(--link); border: 0; border-radius: 6px;
+    padding: 7px 16px; cursor: pointer; }
+  .check button:hover { filter: brightness(1.1); }
+  .verdict { font-weight: 600; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.bad { color: light-dark(#cf222e, #f85149); }
+  .check .msg { margin: 0; }
+  .open { display: inline-block; padding: 8px 16px; border: 1px solid var(--link); border-radius: 6px; text-decoration: none; }
+</style>

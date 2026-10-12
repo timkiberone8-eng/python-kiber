@@ -1,0 +1,33 @@
+<script>
+  const SALT = "kiber-olymp-14";
+
+  async function hash(answer) {
+    const bytes = new TextEncoder().encode(`${SALT}|${answer}`);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+  }
+
+  const clean = (value) => value.replace(/\s+/g, "");
+
+  function show(el, ok, text) {
+    el.textContent = text;
+    el.className = `${el.classList.contains("msg") ? "msg " : ""}verdict ${ok ? "ok" : "bad"}`;
+  }
+
+  function onCheck(box, run) {
+    box.querySelector("button").addEventListener("click", run);
+    box.querySelectorAll("input").forEach((input) =>
+      input.addEventListener("keydown", (e) => e.key === "Enter" && run()));
+  }
+  for (const box of document.querySelectorAll(".check")) {
+    if (!box.querySelector("input[data-h]")) continue;
+    onCheck(box, () => box.querySelectorAll(".row").forEach(async (row) => {
+      const input = row.querySelector("input");
+      const verdict = row.querySelector(".verdict");
+      const answer = clean(input.value);
+      if (!answer) return show(verdict, false, "впиши ответ");
+      const ok = (await hash(answer)) === input.dataset.h;
+      show(verdict, ok, ok ? "верно" : "не верно");
+    }));
+  }
+</script>
