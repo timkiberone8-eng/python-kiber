@@ -69,6 +69,36 @@ cursor.close()
 connection.close()
 ```
 
+**Что такое `sale`.** `sales_data` это список из пяти продаж, каждая продажа записана кортежем: четыре значения в круглых скобках. `for sale in sales_data:` проходит по списку, и на каждом круге в переменной `sale` лежит одна продажа: на первом круге `("Laptop", 10, 700, datetime(2024, 1, 10))`, на втором продажа Smartphone и так далее. Кругов пять, значит пять команд `INSERT`.
+
+Имя `sale` придумали мы сами, оно появляется прямо в строке `for`. Можно было назвать `item` или `x`, работало бы так же; `sale` («продажа») выбрано, чтобы было понятно, что внутри.
+
+Вторым аргументом `execute` получает `sale`, то есть четыре значения. psycopg2 раскладывает их по четырём `%s` по порядку: первое значение на место первого `%s`, второе на место второго. Тексту он сам ставит кавычки, дату переводит в понятный базе вид.
+
+<details markdown="1">
+<summary markdown="span">Подробнее: увидеть, что лежит в sale и что уходит в базу</summary>
+
+Добавь в цикл два `print`, а `execute` замени на `mogrify`: он собирает команду так же, как `execute`, но не отправляет её, а возвращает. На занятии его не было, здесь он нужен, только чтобы заглянуть внутрь:
+
+```python
+for sale in sales_data:
+    print(sale)
+    print(cursor.mogrify("INSERT INTO sales (product_name, quantity, price, sale_date) VALUES (%s, %s, %s, %s)", sale).decode())
+```
+
+Первые два круга:
+
+```
+('Laptop', 10, 700, datetime.datetime(2024, 1, 10, 0, 0))
+INSERT INTO sales (product_name, quantity, price, sale_date) VALUES ('Laptop', 10, 700, '2024-01-10T00:00:00'::timestamp)
+('Smartphone', 25, 300, datetime.datetime(2024, 1, 11, 0, 0))
+INSERT INTO sales (product_name, quantity, price, sale_date) VALUES ('Smartphone', 25, 300, '2024-01-11T00:00:00'::timestamp)
+```
+
+У `Laptop` появились кавычки, числа остались без них. Дата стала текстом `'2024-01-10T00:00:00'` с пометкой `::timestamp` («это дата и время»), а столбец `DATE` время отбросит. `.decode()` нужен, потому что `mogrify` возвращает команду байтами, а `decode` делает из них обычную строку.
+
+</details>
+
 ### Спросить у базы
 
 ```python
