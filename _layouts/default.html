@@ -49,6 +49,12 @@
   details { border: 1px solid var(--line); border-radius: 8px; padding: 0 16px; }
   details[open] { padding-bottom: 4px; }
   summary { cursor: pointer; color: var(--link); padding: 10px 0; }
+  .spoiler { background: var(--line); color: transparent; cursor: pointer; border-radius: 4px;
+    padding: 2px 4px; user-select: none; transition: background .15s, color .15s;
+    box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  .spoiler:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  .spoiler:not(.open) * { color: transparent !important; background: transparent !important; }
+  .spoiler.open { background: transparent; color: inherit; user-select: text; }
   .highlighter-rouge { position: relative; }
   .copy { position: absolute; top: 8px; right: 8px; display: grid; place-items: center;
     width: 32px; height: 32px; padding: 0; border: 1px solid var(--line); border-radius: 6px;
@@ -155,6 +161,18 @@
       }, 2000);
     });
     block.appendChild(button);
+  });
+
+  document.addEventListener("click", (e) => {
+    const s = e.target.closest(".spoiler");
+    if (s) s.classList.toggle("open");
+  });
+  document.addEventListener("keydown", (e) => {
+    const s = e.target.closest(".spoiler");
+    if (s && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      s.classList.toggle("open");
+    }
   });
 </script>
 </body>
