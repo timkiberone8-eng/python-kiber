@@ -65,6 +65,39 @@
   .copy .done, .copy.copied .idle { display: none; }
   .copy.copied .done { display: block; }
   .copy.copied { color: var(--ok); border-color: var(--ok); }
+  .quiz { background: var(--soft); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; margin: 16px 0; }
+  .quiz-label { display: block; font-weight: 600; margin-bottom: 10px; color: var(--ink); }
+  .quiz-row { display: flex; gap: 8px; align-items: stretch; }
+  .quiz-input { flex: 1; min-width: 0; padding: 8px 14px; font: 1.1em Consolas, "Cascadia Mono", monospace;
+    font-weight: 700; text-align: center; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; outline: none;
+    transition: border-color .15s, box-shadow .15s; }
+  .quiz-input:focus { border-color: var(--link); outline: 2px solid var(--link); outline-offset: 1px; }
+  .quiz-input.wrong { border-color: var(--hl-keyword) !important; animation: quiz-shake .25s ease-in-out; }
+  .quiz-submit { padding: 8px 18px; font: inherit; font-weight: 600; border: 0; border-radius: 6px;
+    background: var(--link); color: #fff; cursor: pointer; flex-shrink: 0;
+    transition: filter .15s, transform .1s; }
+  .quiz-submit:hover:not(:disabled) { filter: brightness(1.1); }
+  .quiz-submit:active:not(:disabled) { transform: scale(0.97); }
+  .quiz-submit.ok { background: var(--ok) !important; cursor: default; }
+  .quiz-hint-btn { background: none; border: 1px dashed var(--line); color: var(--muted); font: inherit;
+    font-size: .85em; font-weight: 600; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+    margin-top: 10px; display: inline-flex; align-items: center; gap: 5px; transition: border-color .15s, color .15s; }
+  .quiz-hint-btn:hover { border-color: var(--link); color: var(--link); }
+  .quiz-hint-box { display: none; margin-top: 8px; padding: 8px 12px; font-size: .9em;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px; color: var(--ink); }
+  .quiz-hint-box.open { display: block; }
+  .quiz-verdict { margin-top: 8px; font-size: .95em; font-weight: 600; min-height: 20px; display: none; }
+  .quiz-verdict.show { display: block; }
+  .quiz-verdict.bad { color: var(--hl-keyword); }
+  .quiz-verdict.ok { color: var(--ok); }
+  .quiz-solution { display: none; margin-top: 12px; padding: 12px 14px; background: var(--bg);
+    border: 1px solid var(--ok); border-radius: 6px; font-size: .9em; line-height: 1.5;
+    animation: quiz-fade .3s ease; }
+  .quiz-solution.open { display: block; }
+  @keyframes quiz-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  @keyframes quiz-fade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
   .theme { position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; padding: 0;
     border: 0; border-radius: 50%; background: none; cursor: pointer; opacity: .22;
     color: light-dark(#e3a008, #b9cdf5); -webkit-tap-highlight-color: transparent;
@@ -172,6 +205,65 @@
     if (s && (e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
       s.classList.toggle("open");
+    }
+  });
+
+  const QUIZ_SALT = "kiber-olymp-14";
+  async function quizHash(val) {
+    const bytes = new TextEncoder().encode(`${QUIZ_SALT}|${val.trim()}`);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+  }
+
+  document.querySelectorAll(".quiz").forEach(quiz => {
+    const input = quiz.querySelector(".quiz-input");
+    const checkBtn = quiz.querySelector(".quiz-submit");
+    const hintBtn = quiz.querySelector(".quiz-hint-btn");
+    const hintBox = quiz.querySelector(".quiz-hint-box");
+    const verdict = quiz.querySelector(".quiz-verdict");
+    const solution = quiz.querySelector(".quiz-solution");
+    const correctHash = quiz.dataset.h;
+
+    if (hintBtn && hintBox) {
+      hintBtn.addEventListener("click", () => {
+        hintBox.classList.toggle("open");
+      });
+    }
+
+    const check = async () => {
+      const val = (input.value || "").trim();
+      if (!val) {
+        verdict.className = "quiz-verdict show bad";
+        verdict.textContent = "Впиши число!";
+        input.focus();
+        return;
+      }
+
+      const calculated = await quizHash(val);
+      if (calculated === correctHash) {
+        input.disabled = true;
+        checkBtn.disabled = true;
+        checkBtn.className = "quiz-submit ok";
+        checkBtn.textContent = "✓ Верно";
+        verdict.className = "quiz-verdict show ok";
+        verdict.textContent = "Отличная работа!";
+        if (solution) solution.classList.add("open");
+      } else {
+        input.classList.remove("wrong");
+        void input.offsetWidth;
+        input.classList.add("wrong");
+        verdict.className = "quiz-verdict show bad";
+        const trap = quiz.dataset["trap" + val];
+        verdict.textContent = trap || "Не сходится. Попробуй воспользоваться подсказкой!";
+        input.select();
+      }
+    };
+
+    if (checkBtn && input) {
+      checkBtn.addEventListener("click", check);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") check();
+      });
     }
   });
 </script>

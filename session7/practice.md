@@ -107,7 +107,25 @@ for i in range(1, 4):
 
 Сначала посчитай в уме, потом запусти.
 
-**Ответ:** <span class="spoiler" role="button" tabindex="0" title="Нажми, чтобы показать ответ">15 раз. Внешний цикл делает 3 шага (i = 1, 2, 3), внутри каждого внутренний делает 5 подшагов (j = 1, 2, 3, 4, 5): 3 × 5 = 15.</span>
+<div class="quiz" data-h="68b63217e486c730"
+     data-trap-8="Не сходится (8): похоже, ты сложил 3 + 5, а циклы вложенные (нужно перемножать)."
+     data-trap-12="Не сходится (12): range(1, 4) даёт 3 шага (1, 2, 3), а не 4."
+     data-trap-24="Не сходится (24): правые границы 4 и 6 не входят в range.">
+  <label class="quiz-label" for="ans-nested-print">Сколько раз выполнится print?</label>
+  <div class="quiz-row">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" id="ans-nested-print" class="quiz-input" placeholder="Твой ответ">
+    <button type="button" class="quiz-submit">Проверить</button>
+  </div>
+  <button type="button" class="quiz-hint-btn"><span>💡</span> <span>Подсказка</span></button>
+  <div class="quiz-hint-box">
+    Посчитай отдельно, сколько шагов делает внешний цикл <code>i</code> в <code>range(1, 4)</code>, и сколько подшагов делает внутренний <code>j</code> в <code>range(1, 6)</code>. Затем перемножь их!
+  </div>
+  <div class="quiz-verdict" aria-live="polite"></div>
+  <div class="quiz-solution">
+    <strong>🎉 Верно! 15 раз.</strong>
+    <div>Внешний цикл делает 3 шага (i = 1, 2, 3), внутри каждого внутренний делает 5 подшагов (j = 1, 2, 3, 4, 5): 3 × 5 = 15.</div>
+  </div>
+</div>
 
 </details>
 
