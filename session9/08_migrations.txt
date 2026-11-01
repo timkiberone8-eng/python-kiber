@@ -1,0 +1,21 @@
+ШАГ 8. СОЗДАЁМ ТАБЛИЦЫ ПО ОПИСАНИЮ
+
+ГДЕ: терминал рядом с manage.py. Сервер пока остановлен.
+Модель Product уже записана и сохранена в catalog/models.py.
+
+python manage.py makemigrations catalog  # Создать инструкцию изменения таблиц
+python manage.py migrate                 # Применить её и служебные миграции
+python manage.py showmigrations catalog  # Проверить применение
+
+ОЖИДАЕМ: Applying ... OK и [X] 0001_initial.
+Файл catalog/migrations/0001_initial.py создал Django — руками его не печатаем.
+models.py — описание товара; миграция — инструкция; migrate создаёт таблицу.
+Системные таблицы users/sessions/admin создаются в новой базе вместе с товаром.
+После команды Product ещё пуст: данные добавим через админку.
+
+Ошибки:
+No module named psycopg2 → python -m pip install psycopg2-binary==2.9.13
+database ... does not exist → имя NAME не совпало с созданной базой.
+password authentication failed → перепроверить локальный пароль и USER.
+connection refused → сервер PostgreSQL, HOST, PORT; это не ошибка модели.
+No changes detected → сохранён ли models.py, добавлен ли catalog в INSTALLED_APPS?
