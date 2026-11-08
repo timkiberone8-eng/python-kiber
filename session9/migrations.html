@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Миграции Django: от модели к таблице</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff;--fg:#172436;--soft:#f0f4f8;--line:#b5c3d0;--accent:#1659a5}
+@media(prefers-color-scheme:dark){:root{--bg:#111923;--fg:#edf3fa;--soft:#1c2938;--line:#597086;--accent:#90c4ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:19px/1.65 system-ui,sans-serif}main{max-width:960px;margin:auto;padding:32px 20px 80px}h1{font-size:clamp(28px,5vw,42px);line-height:1.2}h2{line-height:1.3;margin-top:2em}h3{font-size:21px}a{color:var(--accent)}code{font-size:.94em;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow:auto;border-radius:10px}pre code{white-space:pre;overflow-wrap:normal}.command-step{border:1px solid var(--line);border-radius:14px;padding:18px;margin:20px 0}.command-input{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}button{font:inherit;min-height:44px;padding:8px 15px;background:var(--soft);color:var(--fg);border:1px solid var(--line);border-radius:8px;cursor:pointer}button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px}table{border-collapse:collapse;width:100%;font-size:17px}th,td{border:1px solid var(--line);padding:12px;text-align:left;vertical-align:top}details{padding:16px;border:1px solid var(--line);border-radius:10px}summary{cursor:pointer}.muted{font-size:16px}.table-scroll{overflow-x:auto}#copy-status{min-height:28px;font-size:16px}
+</style></head><body><main>
+<p class="muted">KIBERone · Python и PostgreSQL</p>
+<h1>Миграции Django: от модели к таблице</h1>
+<p>Что создаёт базу, что записывает инструкцию, а что выполняет её. Команды ниже запускаются в своём учебном проекте.</p>
+<p id="copy-status" role="status" aria-live="polite"></p>
+<section class="source-section start-guide">
+<h2>Первый migrate: что сейчас произойдёт</h2>
+<p><strong>Миграция</strong> — сохранённая инструкция изменения структуры базы: например, создать таблицу или добавить поле. Python-файл модели описывает желаемые данные, файл миграции описывает изменение, а таблица находится в самой базе. Ниже сохранён прежний полный разбор этой цепочки.</p>
+<p>В Django уже есть приложения <code>auth</code> (учётные записи и права), <code>admin</code> (в том числе журнал действий админки), <code>contenttypes</code> (учёт типов моделей) и <code>sessions</code> (сеансы). Если они подключены в <code>INSTALLED_APPS</code>, их готовые миграции поставляются вместе с Django. Поэтому <strong>первый migrate можно выполнить без предварительного makemigrations</strong>: инструкции для этих приложений уже написаны разработчиками Django.</p>
+<article class="command-step"><h3>1. Применить готовые инструкции</h3><div class="command-input"><span>Терминал VS Code рядом с manage.py</span><button type="button" class="text-button" data-copy-command>Копировать</button></div><pre><code>python manage.py migrate</code></pre><p class="command-result"><strong>Ожидаемый результат</strong> В терминале перечислены приложения и строки вида <code>Applying contenttypes.0001_initial... OK</code>, <code>Applying auth.0001_initial... OK</code>. Набор и порядок зависят от проекта и уже выполненных миграций. Если всё применено раньше: <code>No migrations to apply.</code></p><p>Команда читает настройки текущего проекта и работает с подключением <code>DATABASES['default']</code>. Перед запуском сверь локально <code>ENGINE='django.db.backends.postgresql'</code> и <code>NAME='catalog_db'</code>, а также свою роль и адрес сервера. Успех в другом подключении, например SQLite, не подтверждает работу нужной PostgreSQL. Значения паролей не выводи.</p></article>
+<article class="command-step"><h3>2. Посмотреть, что отмечено применённым</h3><div class="command-input"><span>Тот же терминал; команда только показывает статус</span><button type="button" class="text-button" data-copy-command>Копировать</button></div><pre><code>python manage.py showmigrations</code></pre><p class="command-result"><strong>Ожидаемый результат</strong> Названия приложений и миграций: <code>[X]</code> означает применённую миграцию, <code>[ ]</code> — ещё не применённую. У нового <code>catalog</code> пока может быть <code>(no migrations)</code>: модель Product добавим следующим этапом.</p></article>
+<h2>Четыре команды — разные результаты</h2>
+<table><thead><tr><th>Команда</th><th>Где и зачем</th></tr></thead><tbody>
+<tr><td><code>CREATE DATABASE catalog_db;</code></td><td>В SQL Shell. Создаёт отдельную базу на сервере PostgreSQL; таблицы Django ещё не создаёт.</td></tr>
+<tr><td><code>python manage.py makemigrations catalog</code></td><td>В терминале проекта, позже, после описания Product. Создаёт Python-файл с инструкциями изменения модели; саму таблицу этой командой не создаём.</td></tr>
+<tr><td><code>python manage.py migrate</code></td><td>В терминале проекта. Применяет недостающие файлы миграций к выбранной базе: создаёт или меняет её структуру.</td></tr>
+<tr><td><code>python manage.py showmigrations</code></td><td>Показывает список миграций и учёт их применения. Новые миграции и таблицы не создаёт.</td></tr>
+</tbody></table>
+<h2>Мы же уже писали CREATE TABLE и ALTER TABLE?</h2>
+<p>Да: раньше вы вручную писали SQL-инструкции, например <code>CREATE TABLE</code> для создания таблицы и <code>ALTER TABLE</code> для изменения. С Django база остаётся PostgreSQL, а изменения по-прежнему исполняются через SQL. Меняется способ подготовки и учёта этих изменений.</p>
+<p><strong>Цепочка:</strong> <code>models.py</code> описывает модель → <code>makemigrations</code> записывает операции изменения в Python-файл миграции → <code>migrate</code> применяет их через SQL к PostgreSQL и учитывает применение. Файл миграции обычно содержит операции Django, а не просто готовый SQL-текст; нужный SQL формируется для выбранной базы при выполнении.</p>
+<p><code>CREATE DATABASE</code> отдельно создаёт саму базу. Обычный <code>migrate</code> её не создаёт: он подключается к уже существующей базе из настроек и меняет структуру внутри неё.</p>
+<details><summary>Позже, после makemigrations catalog: посмотреть SQL</summary>
+<article class="command-step"><h3>Показать SQL первой миграции catalog</h3><div class="command-input"><span>Только когда catalog/migrations/0001_initial.py уже появился</span><button type="button" class="text-button" data-copy-command>Копировать</button></div><pre><code>python manage.py sqlmigrate catalog 0001</code></pre><p class="command-result"><strong>Ожидаемый результат</strong> SQL для этой миграции, например <code>CREATE TABLE</code>. Вывод смотрим в терминале.</p><p><code>sqlmigrate</code> показывает SQL и ничего не применяет. Чтобы выполнить операции миграции, используется <code>migrate</code>. На первом системном migrate собственной миграции catalog ещё может не быть — эту команду пока пропусти.</p></article>
+</details>
+<h2>Где находятся файлы, таблицы и учёт</h2>
+<ul>
+<li><strong>Файлы своего приложения:</strong> папка <code>catalog/migrations/</code> рядом с <code>catalog/models.py</code>. Сразу после <code>startapp</code> в ней обычно только <code>__init__.py</code>. Файл <code>0001_initial.py</code> появится после создания модели и команды <code>makemigrations catalog</code>, а не после первого системного <code>migrate</code>.</li>
+<li><strong>Встроенные файлы:</strong> внутри установленного пакета Django выбранного Python, например <code>…/site-packages/django/contrib/auth/migrations/</code>. Копировать их в <code>catalog</code> не нужно.</li>
+<li><strong>Таблицы:</strong> на сервере PostgreSQL в выбранной базе <code>catalog_db</code>, а не в папке Python-проекта. Если смотришь через pgAdmin, открой именно эту базу → Schemas → public → Tables и обнови список. В этом маршруте отдельную схему не создаём. Среди таблиц будут, например, <code>auth_user</code>, <code>django_session</code> и <code>django_migrations</code>.</li>
+<li><strong>Учёт применения:</strong> таблица <code>django_migrations</code> хранит записи о применённых миграциях для этой базы: приложение, имя миграции и время применения. Это не таблица товаров. Файлы инструкций и записи об их применении — разные вещи.</li>
+</ul>
+<h2>Что означает повторный запуск</h2>
+<p>Обычный повторный <code>migrate</code> без дополнительных аргументов применяет только недостающие миграции с учётом их зависимостей. Если новых нет, сообщает <code>No migrations to apply.</code> Он не запускает веб-сервер и не добавляет товары. В нашем первом запуске применяются встроенные инструкции Django; будущий Product появится отдельным шагом. Вообще миграции могут также содержать специально написанные операции с данными, но таких инструкций добавления товаров в этом маршруте нет.</p>
+<p>Если появилась ошибка, читай последнюю строку в этом же терминале и сохраняй её для вопроса преподавателю. Отметку успеха ставь после успешного завершения и проверки нужного подключения. Ни вывод <code>check</code>, ни сохранённые галочки пульта не заменяют эту проверку.</p>
+
+</section>
+
+</main><script>
+document.querySelectorAll('[data-copy-command]').forEach(button=>button.addEventListener('click',async()=>{
+const code=button.closest('.command-step').querySelector('pre code').textContent;
+const status=document.getElementById('copy-status');
+try{await navigator.clipboard.writeText(code);status.textContent='Команда скопирована.'}catch{status.textContent='Выдели команду и скопируй её вручную.'}
+}));
+document.querySelectorAll('table').forEach(table=>{const wrap=document.createElement('div');wrap.className='table-scroll';table.before(wrap);wrap.append(table)});
+</script></body></html>
