@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from catalog.views import home
+from templates.catalog.catalog.views import home
 
 
 
