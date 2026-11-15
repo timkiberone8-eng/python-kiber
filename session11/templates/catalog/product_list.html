@@ -32,6 +32,35 @@
             line-height: 1.2;
         }
 
+        .budget-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .budget-form input {
+            width: 110px;
+            padding: 8px;
+            border: 1px solid #557365;
+            border-radius: 8px;
+            font-size: 18px;
+        }
+
+        .budget-form button {
+            padding: 8px 14px;
+            border: 1px solid #1d503a;
+            border-radius: 8px;
+            color: #ffffff;
+            background-color: #1d503a;
+            font-size: 18px;
+        }
+
+        .budget-form a {
+            color: #1d503a;
+        }
+
         /* flex-wrap переносит карточки на новую строку, если они не помещаются. */
         .products {
             display: flex;
@@ -66,6 +95,17 @@
 <body>
     <main>
         <h1>Каталог товаров</h1>
+        {# На шаге 3 функция home передаёт show_budget=True. На шаге 2 этого ключа нет, поэтому форма пропускается. #}
+        {% if show_budget %}
+            <form class="budget-form" method="get">
+                <label for="max-price">Бюджет до, ₽</label>
+                {# name задаёт параметр в адресе. При вводе 60 получится ?max_price=60. #}
+                <input id="max-price" name="max_price" type="number"
+                       min="0" max="999999" step="1" value="{{ max_price }}">
+                <button type="submit">Показать</button>
+                <a href="/">Сбросить</a>
+            </form>
+        {% endif %}
         {% if products %}
             <ul class="products">
                 {% for product in products %}
