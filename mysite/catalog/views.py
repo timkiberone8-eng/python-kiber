@@ -6,12 +6,15 @@ from .models import Product
 
 # Create your views here.
 def home(request):
-    products = Product.objects.filter(price__lte=100).order_by('price', 'id')
-    lines = []
+    max_price = request.GET.get('max_price', '')
+    products = Product.objects.order_by('price', 'id')
 
-    for product in products:
-        lines.append(f'{product.name} - {product.price}')
+    if max_price:
+        budget = int(max_price)
+        products = products.filter(price__lte=budget)
 
-    text = '\n'.join(lines) or 'Товаров пока нет'
-
-    return render(request, 'catalog/product_list.html', {'products': products})
+    return render(request, 'catalog/product_list.html', {
+        'products': products,
+        'show_budget': True,
+        'max_price': max_price,
+    })
