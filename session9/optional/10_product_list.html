@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><title>Каталог</title></head>
+<body>
+<h1>Товары и цены</h1>
+<ul>
+{% for product in products %}
+<li>{{ product.name }} — {{ product.price }} ₽</li>
+{% empty %}
+<li>Товаров пока нет</li>
+{% endfor %}
+</ul>
+<a href="/">Главная</a>
+</body>
+</html>

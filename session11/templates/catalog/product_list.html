@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Каталог товаров</title>
+    <style>
+        /* Ширина карточки включает её рамку и внутренние отступы. */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: #182b22;
+            background-color: #f4f7f3;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 36px;
+            line-height: 1.2;
+        }
+
+        .budget-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .budget-form input {
+            width: 110px;
+            padding: 8px;
+            border: 1px solid #557365;
+            border-radius: 8px;
+            font-size: 18px;
+        }
+
+        .budget-form button {
+            padding: 8px 14px;
+            border: 1px solid #1d503a;
+            border-radius: 8px;
+            color: #ffffff;
+            background-color: #1d503a;
+            font-size: 18px;
+        }
+
+        .budget-form a {
+            color: #1d503a;
+        }
+
+        .budget-error {
+            color: #9a2a22;
+        }
+
+        /* flex-wrap переносит карточки на новую строку, если они не помещаются. */
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .products li {
+            width: 220px;
+            max-width: 100%;
+            padding: 16px;
+            border: 1px solid #bacbc0;
+            border-radius: 12px;
+            background-color: #ffffff;
+            overflow-wrap: anywhere;
+        }
+
+        .product-name {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .product-price {
+            color: #1d503a;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Каталог товаров</h1>
+        {# На шаге 3 функция home передаёт show_budget=True. На шаге 2 этого ключа нет, поэтому форма пропускается. #}
+        {% if show_budget %}
+            <form class="budget-form" method="get">
+                <label for="max-price">Бюджет до, ₽</label>
+                {# name задаёт параметр в адресе. При вводе 60 получится ?max_price=60. #}
+                <input id="max-price" name="max_price" type="number"
+                       min="0" max="999999" step="1" value="{{ max_price }}">
+                <button type="submit">Показать</button>
+                <a href="/">Сбросить</a>
+            </form>
+            {% if error %}
+                <p class="budget-error">{{ error }}</p>
+            {% endif %}
+        {% endif %}
+        {% if products %}
+            <ul class="products">
+                {% for product in products %}
+                    <li>
+                        <span class="product-name">{{ product.name }}</span>
+                        <span class="product-price">{{ product.price }} ₽</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>По этой цене товаров нет.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

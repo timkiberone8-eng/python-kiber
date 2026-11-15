@@ -1,0 +1,16 @@
+ШАГ 2. ПРИЛОЖЕНИЕ catalog
+
+ГДЕ: терминал рядом с manage.py. Сервер остановлен Ctrl+C.
+
+python manage.py startapp catalog        # Создаёт приложение рядом с manage.py
+
+ОТКРЫТЬ: mysite/settings.py
+В существующий список INSTALLED_APPS добавь ОДНУ строку:
+
+    'catalog',                           # Подключаем наше приложение
+
+Остальные строки INSTALLED_APPS сохрани.
+Сейчас справа от manage.py появится папка catalog с views.py, models.py, admin.py.
+Следом открой образцы 03_catalog_views.py и 04_project_urls.py.
+
+Если папка catalog уже есть, повторно startapp не выполнять: показать преподавателю.
