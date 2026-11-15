@@ -61,6 +61,10 @@
             color: #1d503a;
         }
 
+        .budget-error {
+            color: #9a2a22;
+        }
+
         /* flex-wrap переносит карточки на новую строку, если они не помещаются. */
         .products {
             display: flex;
@@ -105,6 +109,9 @@
                 <button type="submit">Показать</button>
                 <a href="/">Сбросить</a>
             </form>
+            {% if error %}
+                <p class="budget-error">{{ error }}</p>
+            {% endif %}
         {% endif %}
         {% if products %}
             <ul class="products">
