@@ -1,0 +1,213 @@
+.session-notes {
+  --section-offset: 90px;
+}
+
+main:has(.session-notes) {
+  position: relative;
+}
+
+.session-notes section[id] {
+  display: flow-root;
+  padding-block: 20px 12px;
+  scroll-margin-top: var(--section-offset);
+  outline: none;
+}
+
+.session-notes section[id] > h2 {
+  margin-top: 0;
+  line-height: 1.3;
+}
+
+.session-notes section[id]:focus-visible > h2 {
+  border-bottom-color: var(--link);
+}
+
+.session-notes section[id] > .lesson-meta {
+  margin-bottom: 6px;
+}
+
+.session-notes [data-lesson-end] {
+  position: absolute;
+  bottom: 1px;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.session-notes .budget-cases {
+  padding-left: 24px;
+}
+
+.lesson-toc__index {
+  display: none;
+}
+
+.lesson-toc[data-ready] {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  padding: 6px 0 4px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.lesson-toc[data-ready] .lesson-toc__caption {
+  margin: 0 0 2px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.lesson-toc[data-ready] ol {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lesson-toc[data-ready] li {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.lesson-toc[data-ready] a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.lesson-toc[data-ready] a:hover,
+.lesson-toc[data-ready] a:focus-visible {
+  background: var(--soft);
+  color: var(--ink);
+}
+
+.lesson-toc[data-ready] a[aria-current] {
+  color: var(--link);
+}
+
+.lesson-toc[data-ready] .lesson-toc__index {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  line-height: 24px;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  border-bottom: 2px solid transparent;
+}
+
+.lesson-toc[data-ready] a[aria-current] .lesson-toc__index {
+  font-weight: 700;
+  border-color: currentColor;
+}
+
+.lesson-toc[data-ready] .lesson-toc__name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (min-width: 1240px) and (min-height: 370px) {
+  .session-notes {
+    --section-offset: 24px;
+  }
+
+  .lesson-toc[data-ready] {
+    position: fixed;
+    top: 50%;
+    left: calc(50% + 444px);
+    width: 156px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    transform: translateY(-50%);
+    background: transparent;
+  }
+
+  .lesson-toc[data-ready] .lesson-toc__caption,
+  .lesson-toc[data-ready] .lesson-toc__index {
+    display: none;
+  }
+
+  .lesson-toc[data-ready] ol {
+    flex-direction: column;
+  }
+
+  .lesson-toc[data-ready] a {
+    justify-content: flex-end;
+    gap: 9px;
+    padding: 0 8px 0 6px;
+  }
+
+  .lesson-toc[data-ready] .lesson-toc__name {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    text-align: right;
+    font-size: 14px;
+    line-height: 1.2;
+    opacity: 0;
+    transform: translateX(3px);
+    transition: opacity .16s ease, transform .16s ease;
+  }
+
+  .lesson-toc[data-ready]:hover .lesson-toc__name,
+  .lesson-toc[data-ready]:focus-within .lesson-toc__name {
+    opacity: 1;
+    transform: none;
+  }
+
+  .lesson-toc[data-ready] a::after {
+    content: "";
+    width: 10px;
+    height: 2px;
+    flex: none;
+    border-radius: 2px;
+    background: currentColor;
+    transition: width .16s ease, height .16s ease;
+  }
+
+  .lesson-toc[data-ready] a[aria-current]::after {
+    width: 18px;
+    height: 4px;
+  }
+
+  .lesson-toc[data-ready] a[aria-current] .lesson-toc__name {
+    font-weight: 600;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:has(.lesson-toc[data-ready]) {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-toc[data-ready] a,
+  .lesson-toc[data-ready] a::after,
+  .lesson-toc[data-ready] .lesson-toc__name,
+  .session-notes a,
+  .session-notes summary {
+    transition: none;
+  }
+}
+
+@media print {
+  .lesson-toc {
+    display: none;
+  }
+}

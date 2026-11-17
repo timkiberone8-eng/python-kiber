@@ -1,0 +1,165 @@
+---
+layout: default
+title: "Занятие 12 · Бюджет в каталоге Django"
+---
+<link rel="stylesheet" href="../session11/lesson.css">
+<style>{% include_relative lesson-toc.css %}</style>
+<script src="lesson-toc.js" defer></script>
+
+<div class="lesson session-notes copyable" id="top">
+  <header>
+    <p class="lesson-meta">KIBERone · 14+ · воскресенье, 22 ноября 2026 · 17:00–20:00 МСК</p>
+    <h1>Занятие 12 · Бюджет в каталоге Django</h1>
+    <p>Свяжем форму бюджета с фильтром каталога. Затем каждый изменит запрос, проверит выдачу и объяснит свою правку.</p>
+  </header>
+
+  <nav class="lesson-toc" aria-label="Разделы занятия" data-lesson-toc>
+    <p class="lesson-toc__caption">Разделы<span data-toc-current></span></p>
+    <ol>
+      <li><a href="#coffee"><span class="lesson-toc__index" aria-hidden="true">1</span><span class="lesson-toc__name">Задача про кофе</span></a></li>
+      <li><a href="#startup"><span class="lesson-toc__index" aria-hidden="true">2</span><span class="lesson-toc__name">Запуск каталога</span></a></li>
+      <li><a href="#budget"><span class="lesson-toc__index" aria-hidden="true">3</span><span class="lesson-toc__name">Форма и фильтр</span></a></li>
+      <li><a href="#break"><span class="lesson-toc__index" aria-hidden="true">4</span><span class="lesson-toc__name">Перерыв</span></a></li>
+      <li><a href="#scenarios"><span class="lesson-toc__index" aria-hidden="true">5</span><span class="lesson-toc__name">Проверка формы</span></a></li>
+      <li><a href="#independent"><span class="lesson-toc__index" aria-hidden="true">6</span><span class="lesson-toc__name">Самостоятельная</span></a></li>
+      <li><a href="#wrap-up"><span class="lesson-toc__index" aria-hidden="true">7</span><span class="lesson-toc__name">Итоги</span></a></li>
+    </ol>
+  </nav>
+
+  <section id="coffee" tabindex="-1" aria-labelledby="coffee-title">
+    <p class="lesson-meta">17:00–17:20</p>
+    <h2 id="coffee-title">1. Разбираем домашнюю про кофе</h2>
+    <p>Откройте условие задачи <a href="https://drive.google.com/file/d/18I4e59hdUPydenSTh6zbt5ovwLglJ6mX/view">«Чрезвычайно хороший кофе»</a>. Попросите показать ход решения, затем вместе пройдите пример с каждой третьей бонусной чашкой и десятью визитами с понедельника.</p>
+    <ol>
+      <li>Отметьте на шкале десяти дней воскресенье. В этот день чашка бесплатна и счётчик бонуса не меняется.</li>
+      <li>На остальных днях отметьте бонусные чашки по правилу «каждая третья». Попросите сверить ответ с примером из условия.</li>
+      <li>Обсудите, как посчитать воскресенья и полные группы визитов без перебора до миллиарда дней.</li>
+    </ol>
+    <p><strong>Переход к Django.</strong> В задаче про кофе предположим ответ по правилам, а потом сверим его с примером. С каталогом сделаем то же самое по ценам.</p>
+  </section>
+
+  <section id="startup" tabindex="-1" aria-labelledby="startup-title">
+    <p class="lesson-meta">17:20–17:45</p>
+    <h2 id="startup-title">2. Проверяем запуск каталога</h2>
+    <p>15 ноября группа отобрала товары до 100 ₽ включительно, отсортировала их, передала выборку в шаблон, оформила карточки, исправила путь к шаблону и начала форму бюджета. На каждом ПК сначала посмотрите, до какого шага дошёл проект.</p>
+    <ol>
+      <li>Откройте папку с <code>manage.py</code> и запустите сервер в окружении проекта. Откройте адрес из терминала, обычно <code>http://127.0.0.1:8000/</code>.</li>
+      <li>Проверьте карточки, цены и порядок. На преподавательском ПК подготовьте четыре примера: ручка 30 ₽, тетрадь 80 ₽, линейка 100 ₽, рюкзак 500 ₽. Если рюкзака не видно при исходном пороге 100 ₽, проверьте его запись в админке.</li>
+      <li>Найдите <code>home</code> в <code>catalog/views.py</code> и шаблон, который открывает <code>render()</code>. Если форма уже есть, проверьте, меняет ли она адрес и список.</li>
+    </ol>
+    <div class="language-console highlighter-rouge"><div class="highlight"><pre><code>python manage.py runserver</code></pre></div></div>
+    <details>
+      <summary>Если проект не запускается или карточек нет</summary>
+      <ul>
+        <li>При ошибке импорта Django проверьте интерпретатор Python. Если не открывается нужная база или пропали товары, сверяйте подключение с тем, на котором работали.</li>
+        <li>При <code>TemplateDoesNotExist</code> сверяйте путь в <code>render()</code> с файлом. Для <code>catalog/templates/catalog/product_list.html</code> имя шаблона — <code>catalog/product_list.html</code>. Для <code>catalog/templates/product_list.html</code> — <code>product_list.html</code>.</li>
+        <li>Если к концу этапа запуск ещё не восстановлен, продолжите в паре на работающем ПК. Каждый сделает свою правку в самостоятельной части.</li>
+      </ul>
+      <p><a href="../session11/notes.html#help">Разбор ошибок из занятия 11</a> · <a href="../session-2026-11-08/notes.html#database">Подключение базы и миграции</a></p>
+    </details>
+  </section>
+
+  <section id="budget" tabindex="-1" aria-labelledby="budget-title">
+    <p class="lesson-meta">17:45–18:20</p>
+    <h2 id="budget-title">3. Связываем форму и фильтр</h2>
+    <p><strong>Покажите цепочку.</strong> При отправке формы методом <code>GET</code> поле с <code>name="max_price"</code> добавит к адресу <code>?max_price=100</code>. В <code>home</code> Django прочитает строку <code>'100'</code>, преобразует её в число и выберет товары с <code>price__lte=100</code>, то есть с ценой не выше 100 ₽. Шаблон получит список <code>products</code> и отрисует карточки.</p>
+    <ol>
+      <li>В шаблоне над карточками найдите форму. Если её нет, возьмите фрагмент ниже. Если форма уже находится внутри блока <code>{% raw %}{% if show_budget %}{% endraw %}</code>, сохраните этот блок.</li>
+      <li>В <code>views.py</code> проверьте импорты <code>render</code> и <code>Product</code>. Замените только <code>home</code>, сохранив имя шаблона из своего рабочего проекта. Старый фиксированный порог заменяем условием, которое использует введённое число.</li>
+      <li>Откройте <code>/?max_price=60</code> вручную. Затем введите 60 в поле и нажмите «Показать». Сравните адрес и выдачу. На четырёх демонстрационных товарах должна остаться ручка.</li>
+    </ol>
+    <details>
+      <summary>Фрагмент формы для шаблона</summary>
+      {% raw %}
+      <div class="language-html highlighter-rouge"><div class="highlight"><pre><code>&lt;form class="budget-form" method="get"&gt;
+    &lt;label for="max-price"&gt;Бюджет до, ₽&lt;/label&gt;
+    &lt;input id="max-price" name="max_price" type="number"
+           min="0" max="999999" step="1" value="{{ max_price }}"&gt;
+    &lt;button type="submit"&gt;Показать&lt;/button&gt;
+    &lt;a href="/"&gt;Сбросить&lt;/a&gt;
+&lt;/form&gt;</code></pre></div></div>
+      {% endraw %}
+      <p>Ссылка «Сбросить» открывает главную без параметров. Атрибут <code>value</code> подставляет сумму из Django, чтобы после обновления было видно, какой порог применён.</p>
+    </details>
+    <details>
+      <summary>Представление home · шаг 3</summary>
+      <div class="language-python highlighter-rouge"><div class="highlight"><pre><code>from django.shortcuts import render
+from .models import Product
+
+
+def home(request):
+    max_price = request.GET.get('max_price', '')
+    products = Product.objects.order_by('price', 'id')
+
+    if max_price:
+        budget = int(max_price)
+        products = products.filter(price__lte=budget)
+
+    return render(request, 'catalog/product_list.html', {
+        'products': products,
+        'show_budget': True,
+        'max_price': max_price,
+    })</code></pre></div></div>
+      <p>Пустая строка пропускает <code>if</code>, поэтому остаётся полный отсортированный список. Флаг <code>show_budget</code> открывает условный блок формы в учебном шаблоне.</p>
+      <p><a href="https://github.com/timkiberone8-eng/python-kiber/blob/2cbc78ab250ba5e1e1b9cec272205e5523415087/session11/03_catalog_filters.py">Исходный шаг 3</a> · <a href="https://github.com/timkiberone8-eng/python-kiber/blob/2cbc78ab250ba5e1e1b9cec272205e5523415087/session11/templates/catalog/product_list.html">Шаблон с карточками</a></p>
+    </details>
+  </section>
+
+  <section id="break" tabindex="-1" aria-labelledby="break-title">
+    <p class="lesson-meta">18:20–18:40</p>
+    <h2 id="break-title">4. Перерыв</h2>
+    <p>Сохраните файлы и оставьте каталог открытым. После перерыва сравним выдачу при разных значениях бюджета.</p>
+  </section>
+
+  <section id="scenarios" tabindex="-1" aria-labelledby="scenarios-title">
+    <p class="lesson-meta">18:40–19:05</p>
+    <h2 id="scenarios-title">5. Проверяем выдачу и сброс</h2>
+    <p>Перед отправкой формы попросите предсказать, какие карточки останутся. Сверьте адрес, поле и порядок. Для своих товаров используйте фактические цены.</p>
+    <ul class="budget-cases">
+      <li><strong>99 ₽ →</strong> ручка, тетрадь. Линейка за 100 ₽ пока не проходит.</li>
+      <li><strong>100 ₽ →</strong> ручка, тетрадь, линейка. <code>price__lte</code> включает границу. В поле остаётся 100.</li>
+      <li><strong>Пустое поле →</strong> <code>/?max_price=</code>, все четыре карточки от дешёвых к дорогим.</li>
+      <li><strong>«Сбросить» после 100 ₽ →</strong> чистый адрес <code>/</code>, пустое поле, рюкзак снова виден.</li>
+      <li><strong>0 ₽ →</strong> параметр <code>max_price=0</code> включает фильтр. На этих товарах выдача пуста.</li>
+    </ul>
+    <details>
+      <summary>По темпу · защита от некорректного ввода</summary>
+      <p>Если основные проверки уже проходят, откройте на локальном сервере <code>/?max_price=abc</code>. Форма принимает числа, но адрес можно набрать вручную. На шаге 3 вызов <code>int('abc')</code> вызывает <code>ValueError</code>.</p>
+      <p>В <a href="https://github.com/timkiberone8-eng/python-kiber/blob/2cbc78ab250ba5e1e1b9cec272205e5523415087/session11/04_catalog_validate_budget.py">шаге 4</a> перед <code>int()</code> проверяется, что строка состоит из десятичных цифр и содержит не больше шести знаков. Примените этот шаг, сохранив путь к своему шаблону. В <a href="https://github.com/timkiberone8-eng/python-kiber/blob/2cbc78ab250ba5e1e1b9cec272205e5523415087/session11/templates/catalog/product_list.html">учебном шаблоне</a> найдите блок <code>error</code> под формой и добавьте его, если на ПК используется другая версия.</p>
+      <p>Повторите <code>/?max_price=abc</code>: ожидаются подсказка и полный список. Затем отправьте 100 ₽ через форму и убедитесь, что подсказка исчезла и фильтр снова работает.</p>
+    </details>
+  </section>
+
+  <section id="independent" tabindex="-1" aria-labelledby="independent-title">
+    <p class="lesson-meta">19:05–19:45</p>
+    <h2 id="independent-title">6. Самостоятельно меняем запрос</h2>
+    <p><strong>Задание для группы.</strong> Измените запрос так, чтобы при любом бюджете самые дорогие из подходящих товаров шли первыми. Сохраните ограничение по цене, работу пустого поля и сброса.</p>
+    <ol>
+      <li>До правки запишите ожидаемый порядок карточек при бюджете 100 ₽.</li>
+      <li>Внесите изменение в <code>home</code>. Проверьте 100 ₽ и ещё один сценарий по выбору. Покажите адрес и выдачу.</li>
+      <li>Покажите изменённую строку. Объясните, какая часть запроса выбирает товары, а какая задаёт порядок. В паре каждый выполняет и объясняет свою правку.</li>
+    </ol>
+    <details>
+      <summary>Подсказка, если нужна</summary>
+      <p>Вспомните, в каком вызове в уроке 11 мы указывали направление сортировки. Сверьтесь с <a href="../session11/notes.html#filter">разбором фильтра и порядка</a>.</p>
+    </details>
+    <p>Если форма на ПК из-за запуска ещё недоступна, предложите выполнить изменение в рабочем каталоге с фиксированным порогом и объяснить разницу в выдаче. К проверке формы вернитесь отдельно.</p>
+  </section>
+
+  <section id="wrap-up" tabindex="-1" aria-labelledby="wrap-up-title">
+    <p class="lesson-meta">19:45–20:00</p>
+    <h2 id="wrap-up-title">7. Подводим итоги</h2>
+    <p>Попросите каждого показать свою правку и одну проверку, затем проследить путь от поля до карточек. Опорные вопросы:</p>
+    <ul>
+      <li>Как имя поля в HTML связано с <code>request.GET</code>?</li>
+      <li>Почему товар ровно за 100 ₽ остаётся в списке при бюджете 100 ₽?</li>
+      <li>Что передаётся в шаблон и что меняется при сбросе?</li>
+    </ul>
+    <p>Отметьте, кто сделал и объяснил правку самостоятельно, кто повторил с помощью и кому ещё нужно восстановить запуск или проверить форму.</p>
+  </section>
+
+  <footer>
+    <p><a href="../session11/notes.html">Конспект занятия 11</a> · <a href="#top">К началу</a></p>
+  </footer>
+  <span data-lesson-end aria-hidden="true"></span>
+</div>
