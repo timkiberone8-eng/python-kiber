@@ -115,6 +115,9 @@ def home(request):
 <p>Когда в проекте будет несколько приложений (например, <code>catalog</code>, <code>users</code>, <code>orders</code>), Django собирает шаблоны со всех приложений в одно общее пространство имён. Если бы файлы лежали просто в <code>catalog/templates/product_list.html</code>, Django при запросе <code>product_list.html</code> мог бы перепутать их с шаблоном из другого приложения. Вложенная подпапка <code>catalog/</code> защищает от таких конфликтов.</p>
 </details>
 
+<p><strong>Упрощённый вариант (без подпапки):</strong><br>
+В небольших проектах, пока приложение одно, шаблон можно положить прямо в <code>catalog/templates/product_list.html</code> (без вложенной папки <code>catalog</code>). Тогда во <code>views.py</code> вызов сокращается до <code>render(request, 'product_list.html', ...)</code>. Оба варианта верны — главное, чтобы путь в <code>render()</code> в точности совпадал с тем, как файл лежит внутри папки <code>templates/</code>.</p>
+
 <h3>Функция render()</h3>
 <p>В файле <code>catalog/views.py</code> импортируем <code>render</code> из модуля <code>django.shortcuts</code>:</p>
 
@@ -256,10 +259,10 @@ def home(request):
 <section id="help">
 <h2>Частые ошибки и их решение</h2>
 <dl>
-<dt>TemplateDoesNotExist: catalog/product_list.html</dt>
+<dt>TemplateDoesNotExist</dt>
 <dd>Django не нашёл файл шаблона. Проверьте:
 <ul>
-<li>Файл лежит именно по пути <code>catalog/templates/catalog/product_list.html</code>;</li>
+<li>Соответствие путей: если шаблон лежит в <code>catalog/templates/product_list.html</code>, в <code>views.py</code> должно быть <code>'product_list.html'</code>; если внутри есть подпапка, то <code>'catalog/product_list.html'</code>;</li>
 <li>Папка <code>templates</code> пишется во множественном числе;</li>
 <li>Приложение <code>'catalog'</code> добавлено в <code>INSTALLED_APPS</code> в файле <code>settings.py</code>.</li>
 </ul>
