@@ -1,0 +1,26 @@
+/* Only readability and content spacing for the session 11 materials.
+   Palette, page width, headings, links, code, copy and theme controls: layout default. */
+.lesson { font-size: 20px; }
+.lesson h1 { font-size: 1.9em; }
+.lesson pre code { font-size: 18px; }
+.lesson pre code, .lesson pre { overflow-wrap: normal; }
+.lesson p, .lesson li, .lesson dd, .lesson code { overflow-wrap: anywhere; }
+.lesson section { scroll-margin-top: 24px; }
+.lesson dt { font-weight: 600; margin-top: 20px; }
+.lesson dd { margin: 6px 0 20px; }
+.lesson li { margin-bottom: 10px; }
+.lesson .lesson-meta { color: var(--muted); font-size: 16px; }
+.lesson footer { margin-top: 40px; border-top: 1px solid var(--line); padding-top: 16px; }
+.lesson summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+.lesson .copy { width: 44px; height: 44px; }
+.lesson .highlighter-rouge pre { padding-top: 56px; }
+.theme { width: 44px; height: 44px; opacity: .85; }
+.theme:not(.dark) { opacity: .85; }
+.theme:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+@media (max-width: 600px) {
+  .lesson { font-size: 19px; }
+  .lesson h1 { font-size: 30px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme, .theme svg { transition: none; }
+}

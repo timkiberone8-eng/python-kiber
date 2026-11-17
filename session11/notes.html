@@ -1,0 +1,398 @@
+---
+layout: default
+title: "Занятие 11: фильтры и HTML-карточки каталога"
+---
+<style>{% include_relative lesson.css %}</style>
+<div class="lesson copyable" id="top">
+<h1>Занятие 11: фильтры и HTML-карточки каталога</h1>
+<p>15 ноября 2026</p>
+<p><a href="practice.html">Задания для закрепления</a></p>
+<p>Предыдущие материалы: <a href="../session-2026-11-08/notes.html">Занятие 10: первый экран каталога</a> и <a href="../session-2026-11-08/practice.html">задания к нему</a>.</p>
+
+<nav aria-label="Содержание">
+<p><strong>Содержание</strong></p>
+<ul>
+<li><a href="#result">Что получилось на занятии</a></li>
+<li><a href="#chain">Цепочка: от базы данных до браузера</a></li>
+<li><a href="#filter">1. Фильтрация и сортировка: filter и order_by</a></li>
+<li><a href="#templates">2. Где Django ищет шаблоны и вызов render()</a></li>
+<li><a href="#tags">3. Шаблонизатор Django: циклы и переменные</a></li>
+<li><a href="#cards">4. Оформление карточек на CSS</a></li>
+<li><a href="#budget">5. Форма бюджета: запрос GET</a></li>
+<li><a href="#help">Частые ошибки и их решение</a></li>
+<li><a href="#summary">Итоговая схема файлов</a></li>
+</ul>
+</nav>
+
+<section id="result">
+<h2>Что получилось на занятии</h2>
+<p>15 ноября мы перешли от минимальной текстовой строки к <strong>настоящему HTML-каталогу с карточками товаров</strong>:</p>
+<ul>
+<li>Добавили в запрос к базе данных фильтр по цене (показали только товары до 100 ₽ включительно);</li>
+<li>Отсортировали товары по возрастанию цены (от дешёвых к дорогим), а при одинаковой цене — по их порядковому номеру (ID);</li>
+<li>Создали HTML-шаблон <code>product_list.html</code>, в котором с помощью цикла вывели карточки каждого подходящего товара;</li>
+<li>Оформили товары в виде адаптивной плитки карточек с помощью CSS Flexbox;</li>
+<li>Разобрали, где Django ищет шаблоны и почему путь удваивается (<code>templates/catalog/</code>);</li>
+<li>Начали добавлять форму бюджета, позволяющую покупателю самому задавать предельную цену через параметры адреса.</li>
+</ul>
+<p>Здесь разобран весь учебный материал занятия. Выполнить проверку и закрепить код на практике можно на странице <a href="practice.html">заданий для закрепления</a>.</p>
+</section>
+
+<section id="chain">
+<h2>Цепочка: от базы данных до браузера</h2>
+<dl>
+<dt>Таблица в базе данных (catalog_product)</dt>
+<dd>Хранит строки с товарами: название и точную цену.</dd>
+<dt>Модель Product (catalog/models.py)</dt>
+<dd>Описывает поля товара в коде на Python. Структура модели не менялась с занятия 10, поэтому <strong>новые миграции на этом занятии не требуются</strong>.</dd>
+<dt>Запрос в views.py (Product.objects.filter(...).order_by(...))</dt>
+<dd>Отбирает нужные строки из базы данных по условию и задаёт порядок сортировки.</dd>
+<dt>Словарь контекста {'products': products}</dt>
+<dd>Упаковывает отобранные товары и передаёт их шаблону под понятным именем.</dd>
+<dt>HTML-шаблон (catalog/templates/catalog/product_list.html)</dt>
+<dd>Генерирует готовую веб-страницу: обходит товары циклом и подставляет их названия и цены в карточки.</dd>
+<dt>Браузер покупателя</dt>
+<dd>Получает итоговый HTML-код со стилями и рисует красивую сетку товаров.</dd>
+</dl>
+</section>
+
+<section id="filter">
+<h2>1. Фильтрация и сортировка: filter и order_by</h2>
+<p>В занятии 10 мы получали все товары подряд через <code>Product.objects.all()</code>. На этом занятии мы уточнили запрос:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre><code>products = Product.objects.filter(price__lte=100).order_by('price', 'id')</code></pre></div></div>
+
+<h3>Что означает price__lte=100?</h3>
+<p>В Django двойное подчёркивание <code>__</code> отделяет имя поля модели (<code>price</code>) от операции сравнения (lookup):</p>
+<ul>
+<li><code>lte</code> — сокращение от <em>less than or equal</em> (меньше или равно, <code>&lt;=</code>). Условие <code>price__lte=100</code> оставляет товары с ценой до 100 ₽ включительно. Товар ровно за 100 ₽ попадёт в список!</li>
+<li><code>gte</code> — <em>greater than or equal</em> (больше или равно, <code>&gt;=</code>).</li>
+<li><code>lt</code> — строго меньше (<code>&lt;</code>).</li>
+<li><code>gt</code> — строго больше (<code>&gt;</code>).</li>
+</ul>
+<p>Если вы знакомы с языком SQL, это прямо соответствует части <code>WHERE price &lt;= 100</code>.</p>
+
+<h3>Что означает order_by('price', 'id')?</h3>
+<p>Метод <code>order_by</code> задаёт порядок сортировки строк:</p>
+<ul>
+<li><code>'price'</code> сортирует от меньшей цены к большей (от дешёвых к дорогим). Это соответствует <code>ORDER BY price ASC</code> в SQL.</li>
+<li><code>'id'</code> — второй критерий (tie-breaker): если у двух товаров одинаковая цена (например, тетрадь за 80 ₽ и альбом за 80 ₽), первым пойдёт тот, который был добавлен в базу раньше (у кого меньше номер <code>id</code>).</li>
+<li><strong>Обратный порядок (от дорогих к дешёвым):</strong> задаётся знаком минус перед именем поля — <code>order_by('-price', 'id')</code>.</li>
+</ul>
+
+<p>Вот как выглядела функция <code>home</code> в <code>catalog/views.py</code> на первом шаге с текстовым выводом:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre><code>from django.http import HttpResponse
+from .models import Product
+
+def home(request):
+    products = Product.objects.filter(price__lte=100).order_by('price', 'id')
+    lines = []
+
+    for product in products:
+        lines.append(f'{product.name} — {product.price} ₽')
+
+    text = '\n'.join(lines) or 'Товаров пока нет'
+    return HttpResponse(text, content_type='text/plain; charset=utf-8')</code></pre></div></div>
+</section>
+
+<section id="templates">
+<h2>2. Где Django ищет шаблоны и вызов render()</h2>
+<p>Текстовая строка удобна для быстрой проверки, но настоящему сайту нужен HTML. В Django за отображение страниц отвечают <strong>шаблоны (templates)</strong>.</p>
+
+<h3>Где должен лежать файл product_list.html?</h3>
+<p>Стандартная настройка Django (<code>APP_DIRS: True</code> в <code>settings.py</code>) ищет файлы шаблонов внутри папок <code>templates</code> каждого установленного приложения. Правильный путь относительно папки с <code>manage.py</code>:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre><code>mysite/
+├── manage.py
+└── catalog/                      ← папка приложения
+    └── templates/                ← стандартная папка шаблонов Django
+        └── catalog/              ← подпапка с именем приложения
+            └── product_list.html ← наш файл шаблона</code></pre></div></div>
+
+<details>
+<summary>Зачем папку catalog повторять внутри templates?</summary>
+<p>Когда в проекте будет несколько приложений (например, <code>catalog</code>, <code>users</code>, <code>orders</code>), Django собирает шаблоны со всех приложений в одно общее пространство имён. Если бы файлы лежали просто в <code>catalog/templates/product_list.html</code>, Django при запросе <code>product_list.html</code> мог бы перепутать их с шаблоном из другого приложения. Вложенная подпапка <code>catalog/</code> защищает от таких конфликтов.</p>
+</details>
+
+<h3>Функция render()</h3>
+<p>В файле <code>catalog/views.py</code> импортируем <code>render</code> из модуля <code>django.shortcuts</code>:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre><code>from django.shortcuts import render
+from .models import Product
+
+def home(request):
+    products = Product.objects.filter(price__lte=100).order_by('price', 'id')
+    return render(request, 'catalog/product_list.html', {'products': products})</code></pre></div></div>
+
+<p>Разберём аргументы <code>render()</code>:</p>
+<ol>
+<li><code>request</code> — входящий HTTP-запрос от браузера;</li>
+<li><code>'catalog/product_list.html'</code> — путь к шаблону относительно папки <code>templates/</code>;</li>
+<li><code>{'products': products}</code> — <strong>словарь контекста</strong>. Слева ключ <code>'products'</code> — под этим именем выборка будет доступна в HTML-шаблоне. Справа значение <code>products</code> — переменная с данными из базы.</li>
+</ol>
+</section>
+
+<section id="tags">
+<h2>3. Шаблонизатор Django: циклы и переменные</h2>
+<p>В шаблоне Django обычный HTML объединяется со специальными тегами шаблонизатора (DTL — Django Template Language):</p>
+
+{% raw %}
+<h3>Переменные: {{ ... }}</h3>
+<p>Двойные фигурные скобки подставляют значение переменной в HTML. Например:</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre><code>&lt;span class="product-name"&gt;{{ product.name }}&lt;/span&gt;
+&lt;span class="product-price"&gt;{{ product.price }} ₽&lt;/span&gt;</code></pre></div></div>
+<p>Если <code>product.name</code> равно «Тетрадь», в браузер отправится чистый HTML: <code>&lt;span class="product-name"&gt;Тетрадь&lt;/span&gt;</code>.</p>
+
+<h3>Теги управления: {% ... %}</h3>
+<p>Фигурные скобки со знаками процентов задают управляющие конструкции: циклы и условия.</p>
+
+<p><strong>Цикл for:</strong></p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre><code>{% for product in products %}
+    &lt;li&gt;
+        &lt;span class="product-name"&gt;{{ product.name }}&lt;/span&gt;
+        &lt;span class="product-price"&gt;{{ product.price }} ₽&lt;/span&gt;
+    &lt;/li&gt;
+{% endfor %}</code></pre></div></div>
+<p>Цикл повторяет разметку внутри блока для каждого товара из переданного списка <code>products</code>. Тег <code>{% endfor %}</code> обязательно закрывает цикл (в отличие от обычного Python, где границы определяются отступами).</p>
+
+<p><strong>Условие if / else:</strong></p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre><code>{% if products %}
+    &lt;ul class="products"&gt;
+        {% for product in products %}
+            &lt;li&gt;...&lt;/li&gt;
+        {% endfor %}
+    &lt;/ul&gt;
+{% else %}
+    &lt;p&gt;По этой цене товаров нет.&lt;/p&gt;
+{% endif %}</code></pre></div></div>
+{% endraw %}
+<p>Если выборка не пуста, отрисовывается список <code>&lt;ul&gt;</code>. Если ни один товар не подошёл под фильтр — выводится понятный текст без ошибок.</p>
+</section>
+
+<section id="cards">
+<h2>4. Оформление карточек на CSS</h2>
+<p>Чтобы товары отображались не просто списком в столбик, а удобной сеткой карточек, мы использовали CSS Flexbox:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre><code>/* Контейнер карточек: выстраивает элементы в ряд с переносом */
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Сама карточка товара */
+.products li {
+    width: 220px;
+    max-width: 100%;
+    padding: 16px;
+    border: 1px solid #bacbc0;
+    border-radius: 12px;
+    background-color: #ffffff;
+    overflow-wrap: anywhere;
+}
+
+.product-name {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.product-price {
+    color: #1d503a;
+}</code></pre></div></div>
+
+<ul>
+<li><code>display: flex</code> — включает гибкую блочную модель для списка;</li>
+<li><code>flex-wrap: wrap</code> — разрешает перенос карточек на новую строку, если они не помещаются в ширину экрана;</li>
+<li><code>gap: 12px</code> — делает аккуратный промежуток между карточками как по горизонтали, так и по вертикали;</li>
+<li><code>border-radius: 12px</code> — скругляет углы карточек;</li>
+<li><code>overflow-wrap: anywhere</code> — защищает верстку: если у товара будет слишком длинное слово, оно перенесётся и не сломает карточку.</li>
+</ul>
+</section>
+
+<section id="budget">
+<h2>5. Форма бюджета: запрос GET</h2>
+<p>В конце занятия мы начали добавлять форму бюджета, чтобы покупатель мог сам ввести предельную сумму:</p>
+
+{% raw %}
+<div class="language-html highlighter-rouge"><div class="highlight"><pre><code>&lt;form class="budget-form" method="get"&gt;
+    &lt;label for="max-price"&gt;Бюджет до, ₽&lt;/label&gt;
+    &lt;input id="max-price" name="max_price" type="number"
+           min="0" max="999999" step="1" value="{{ max_price }}"&gt;
+    &lt;button type="submit"&gt;Показать&lt;/button&gt;
+    &lt;a href="/"&gt;Сбросить&lt;/a&gt;
+&lt;/form&gt;</code></pre></div></div>
+{% endraw %}
+
+<h3>Как параметры попадают из формы в views.py?</h3>
+<ol>
+<li>Атрибут <code>method="get"</code> указывает браузеру отправить введённые данные прямо в адресной строке URL.</li>
+<li>Атрибут <code>name="max_price"</code> задаёт имя параметра в адресе. Например, при вводе числа <code>60</code> браузер перейдёт по адресу <code>http://127.0.0.1:8000/?max_price=60</code>.</li>
+<li>Ссылка «Сбросить» ведёт на чистый адрес <code>/</code>, возвращая каталог ко всем товарам.</li>
+</ol>
+
+<p>В функции <code>home</code> мы читаем этот параметр через словарь <code>request.GET</code>:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre><code>def home(request):
+    max_price = request.GET.get('max_price', '')
+    products = Product.objects.order_by('price', 'id')
+
+    # Если параметр передан, преобразуем его из строки в число и фильтруем
+    if max_price:
+        budget = int(max_price)
+        products = products.filter(price__lte=budget)
+
+    return render(request, 'catalog/product_list.html', {
+        'products': products,
+        'show_budget': True,
+        'max_price': max_price,
+    })</code></pre></div></div>
+</section>
+
+<section id="help">
+<h2>Частые ошибки и их решение</h2>
+<dl>
+<dt>TemplateDoesNotExist: catalog/product_list.html</dt>
+<dd>Django не нашёл файл шаблона. Проверьте:
+<ul>
+<li>Файл лежит именно по пути <code>catalog/templates/catalog/product_list.html</code>;</li>
+<li>Папка <code>templates</code> пишется во множественном числе;</li>
+<li>Приложение <code>'catalog'</code> добавлено в <code>INSTALLED_APPS</code> в файле <code>settings.py</code>.</li>
+</ul>
+</dd>
+
+<dt>Заголовок виден, но карточки пустые («По этой цене товаров нет»)</dt>
+<dd>
+Проверьте имя переменной в словаре <code>render()</code>: оно должно в точности совпадать с циклом в шаблоне — <code>{'products': products}</code> и <code>{% raw %}{% for product in products %}{% endraw %}</code>. Также проверьте порог цены: возможно, все товары в базе стоят дороже установленного лимита.
+</dd>
+
+<dt>ValueError: invalid literal for int() with base 10</dt>
+<dd>
+Возникает, если в адрес вручную ввести не число, например <code>/?max_price=abc</code>. Функция <code>int('abc')</code> падает с ошибкой. На следующем занятии мы разберём проверку <code>max_price.isdecimal()</code> перед вызовом <code>int()</code>.
+</dd>
+
+<dt>Браузер не видит изменения в коде</dt>
+<dd>
+Проверьте, сохранён ли файл (<code>Ctrl+S</code>). Если сервер запускался с параметром <code>--noreload</code>, перезапустите его в обычном режиме <code>python manage.py runserver</code>.
+</dd>
+</dl>
+</section>
+
+<section id="summary">
+<h2>Итоговая схема файлов</h2>
+<p>Вот полный текст файла <code>catalog/templates/catalog/product_list.html</code>, который получился к концу занятия:</p>
+
+{% raw %}
+<div class="language-html highlighter-rouge"><div class="highlight"><pre><code>&lt;!doctype html&gt;
+&lt;html lang="ru"&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;title&gt;Каталог товаров&lt;/title&gt;
+    &lt;style&gt;
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            color: #182b22;
+            background-color: #f4f7f3;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 36px;
+            line-height: 1.2;
+        }
+        .budget-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        .budget-form input {
+            width: 110px;
+            padding: 8px;
+            border: 1px solid #557365;
+            border-radius: 8px;
+            font-size: 18px;
+        }
+        .budget-form button {
+            padding: 8px 14px;
+            border: 1px solid #1d503a;
+            border-radius: 8px;
+            color: #ffffff;
+            background-color: #1d503a;
+            font-size: 18px;
+        }
+        .budget-form a { color: #1d503a; }
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .products li {
+            width: 220px;
+            max-width: 100%;
+            padding: 16px;
+            border: 1px solid #bacbc0;
+            border-radius: 12px;
+            background-color: #ffffff;
+            overflow-wrap: anywhere;
+        }
+        .product-name {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .product-price { color: #1d503a; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;main&gt;
+        &lt;h1&gt;Каталог товаров&lt;/h1&gt;
+        {% if show_budget %}
+            &lt;form class="budget-form" method="get"&gt;
+                &lt;label for="max-price"&gt;Бюджет до, ₽&lt;/label&gt;
+                &lt;input id="max-price" name="max_price" type="number"
+                       min="0" max="999999" step="1" value="{{ max_price }}"&gt;
+                &lt;button type="submit"&gt;Показать&lt;/button&gt;
+                &lt;a href="/"&gt;Сбросить&lt;/a&gt;
+            &lt;/form&gt;
+        {% endif %}
+        {% if products %}
+            &lt;ul class="products"&gt;
+                {% for product in products %}
+                    &lt;li&gt;
+                        &lt;span class="product-name"&gt;{{ product.name }}&lt;/span&gt;
+                        &lt;span class="product-price"&gt;{{ product.price }} ₽&lt;/span&gt;
+                    &lt;/li&gt;
+                {% endfor %}
+            &lt;/ul&gt;
+        {% else %}
+            &lt;p&gt;По этой цене товаров нет.&lt;/p&gt;
+        {% endif %}
+    &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div></div>
+{% endraw %}
+</section>
+
+<footer>
+<p><a href="#top">К началу страницы</a> · <a href="practice.html">Задания для закрепления</a></p>
+</footer>
+</div>
