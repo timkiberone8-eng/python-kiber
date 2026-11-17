@@ -4,7 +4,7 @@ title: "Занятие 12 · Бюджет в каталоге Django"
 ---
 <link rel="stylesheet" href="../session11/lesson.css">
 <style>{% include_relative lesson-toc.css %}</style>
-<script src="lesson-toc.js" defer></script>
+<script src="lesson-toc.js?v=2" defer></script>
 
 <div class="lesson session-notes copyable" id="top">
   <header>
@@ -14,7 +14,7 @@ title: "Занятие 12 · Бюджет в каталоге Django"
   </header>
 
   <nav class="lesson-toc" aria-label="Разделы занятия" data-lesson-toc>
-    <p class="lesson-toc__caption">Разделы<span data-toc-current></span></p>
+    <p class="lesson-toc__caption">Разделы</p>
     <ol>
       <li><a href="#coffee"><span class="lesson-toc__index" aria-hidden="true">1</span><span class="lesson-toc__name">Задача про кофе</span></a></li>
       <li><a href="#startup"><span class="lesson-toc__index" aria-hidden="true">2</span><span class="lesson-toc__name">Запуск каталога</span></a></li>
@@ -27,8 +27,10 @@ title: "Занятие 12 · Бюджет в каталоге Django"
   </nav>
 
   <section id="coffee" tabindex="-1" aria-labelledby="coffee-title">
-    <p class="lesson-meta">17:00–17:20</p>
-    <h2 id="coffee-title">1. Разбираем домашнюю про кофе</h2>
+    <header class="lesson-stage-heading">
+      <p class="lesson-meta">17:00–17:20</p>
+      <h2 id="coffee-title">1. Разбираем домашнюю про кофе</h2>
+    </header>
     <p>Откройте условие задачи <a href="https://drive.google.com/file/d/18I4e59hdUPydenSTh6zbt5ovwLglJ6mX/view">«Чрезвычайно хороший кофе»</a>. Попросите показать ход решения, затем вместе пройдите пример с каждой третьей бонусной чашкой и десятью визитами с понедельника.</p>
     <ol>
       <li>Отметьте на шкале десяти дней воскресенье. В этот день чашка бесплатна и счётчик бонуса не меняется.</li>
@@ -39,8 +41,10 @@ title: "Занятие 12 · Бюджет в каталоге Django"
   </section>
 
   <section id="startup" tabindex="-1" aria-labelledby="startup-title">
-    <p class="lesson-meta">17:20–17:45</p>
-    <h2 id="startup-title">2. Проверяем запуск каталога</h2>
+    <header class="lesson-stage-heading">
+      <p class="lesson-meta">17:20–17:45</p>
+      <h2 id="startup-title">2. Проверяем запуск каталога</h2>
+    </header>
     <p>15 ноября группа отобрала товары до 100 ₽ включительно, отсортировала их, передала выборку в шаблон, оформила карточки, исправила путь к шаблону и начала форму бюджета. На каждом ПК сначала посмотрите, до какого шага дошёл проект.</p>
     <ol>
       <li>Откройте папку с <code>manage.py</code> и запустите сервер в окружении проекта. Откройте адрес из терминала, обычно <code>http://127.0.0.1:8000/</code>.</li>
@@ -60,8 +64,10 @@ title: "Занятие 12 · Бюджет в каталоге Django"
   </section>
 
   <section id="budget" tabindex="-1" aria-labelledby="budget-title">
-    <p class="lesson-meta">17:45–18:20</p>
-    <h2 id="budget-title">3. Связываем форму и фильтр</h2>
+    <header class="lesson-stage-heading">
+      <p class="lesson-meta">17:45–18:20</p>
+      <h2 id="budget-title">3. Связываем форму и фильтр</h2>
+    </header>
     <p><strong>Покажите цепочку.</strong> При отправке формы методом <code>GET</code> поле с <code>name="max_price"</code> добавит к адресу <code>?max_price=100</code>. В <code>home</code> Django прочитает строку <code>'100'</code>, преобразует её в число и выберет товары с <code>price__lte=100</code>, то есть с ценой не выше 100 ₽. Шаблон получит список <code>products</code> и отрисует карточки.</p>
     <ol>
       <li>В шаблоне над карточками найдите форму. Если её нет, возьмите фрагмент ниже. Если форма уже находится внутри блока <code>{% raw %}{% if show_budget %}{% endraw %}</code>, сохраните этот блок.</li>
@@ -106,14 +112,18 @@ def home(request):
   </section>
 
   <section id="break" tabindex="-1" aria-labelledby="break-title">
-    <p class="lesson-meta">18:20–18:40</p>
-    <h2 id="break-title">4. Перерыв</h2>
+    <header class="lesson-stage-heading">
+      <p class="lesson-meta">18:20–18:40</p>
+      <h2 id="break-title">4. Перерыв</h2>
+    </header>
     <p>Сохраните файлы и оставьте каталог открытым. После перерыва сравним выдачу при разных значениях бюджета.</p>
   </section>
 
   <section id="scenarios" tabindex="-1" aria-labelledby="scenarios-title">
-    <p class="lesson-meta">18:40–19:05</p>
-    <h2 id="scenarios-title">5. Проверяем выдачу и сброс</h2>
+    <header class="lesson-stage-heading">
+      <p class="lesson-meta">18:40–19:05</p>
+      <h2 id="scenarios-title">5. Проверяем выдачу и сброс</h2>
+    </header>
     <p>Перед отправкой формы попросите предсказать, какие карточки останутся. Сверьте адрес, поле и порядок. Для своих товаров используйте фактические цены.</p>
     <ul class="budget-cases">
       <li><strong>99 ₽ →</strong> ручка, тетрадь. Линейка за 100 ₽ пока не проходит.</li>
@@ -131,8 +141,10 @@ def home(request):
   </section>
 
   <section id="independent" tabindex="-1" aria-labelledby="independent-title">
-    <p class="lesson-meta">19:05–19:45</p>
-    <h2 id="independent-title">6. Самостоятельно меняем запрос</h2>
+    <header class="lesson-stage-heading">
+      <p class="lesson-meta">19:05–19:45</p>
+      <h2 id="independent-title">6. Самостоятельно меняем запрос</h2>
+    </header>
     <p><strong>Задание для группы.</strong> Измените запрос так, чтобы при любом бюджете самые дорогие из подходящих товаров шли первыми. Сохраните ограничение по цене, работу пустого поля и сброса.</p>
     <ol>
       <li>До правки запишите ожидаемый порядок карточек при бюджете 100 ₽.</li>
@@ -147,8 +159,10 @@ def home(request):
   </section>
 
   <section id="wrap-up" tabindex="-1" aria-labelledby="wrap-up-title">
-    <p class="lesson-meta">19:45–20:00</p>
-    <h2 id="wrap-up-title">7. Подводим итоги</h2>
+    <header class="lesson-stage-heading">
+      <p class="lesson-meta">19:45–20:00</p>
+      <h2 id="wrap-up-title">7. Подводим итоги</h2>
+    </header>
     <p>Попросите каждого показать свою правку и одну проверку, затем проследить путь от поля до карточек. Опорные вопросы:</p>
     <ul>
       <li>Как имя поля в HTML связано с <code>request.GET</code>?</li>

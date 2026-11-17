@@ -6,12 +6,26 @@ for (const nav of document.querySelectorAll('[data-lesson-toc]')) {
 
   if (!sections.length || typeof IntersectionObserver === 'undefined') continue;
 
-  const caption = nav.querySelector('[data-toc-current]');
   const end = nav.parentElement.querySelector('[data-lesson-end]');
+  const page = document.scrollingElement;
+  const scrollPosition = () => Math.max(0, Math.min(window.scrollY, page.scrollHeight - page.clientHeight));
   let current;
   let observer;
   let endObserver;
   let atEnd = false;
+  let scrollAnchor = scrollPosition();
+
+  function updateVisibility() {
+    const y = scrollPosition();
+    if (y < 56) {
+      nav.removeAttribute('data-shown');
+    } else if (Math.abs(y - scrollAnchor) >= 12) {
+      nav.toggleAttribute('data-shown', y > scrollAnchor);
+    } else {
+      return;
+    }
+    scrollAnchor = y;
+  }
 
   function updateActive(readLine) {
     const visible = atEnd ? sections.at(-1) : sections.findLast(({ section }) =>
@@ -21,7 +35,6 @@ for (const nav of document.querySelectorAll('[data-lesson-toc]')) {
     if (current === visible) return;
     current?.link.removeAttribute('aria-current');
     visible.link.setAttribute('aria-current', 'location');
-    if (caption) caption.textContent = ` · ${visible.link.querySelector('.lesson-toc__name').textContent}`;
     current = visible;
   }
 
@@ -48,5 +61,6 @@ for (const nav of document.querySelectorAll('[data-lesson-toc]')) {
 
   nav.dataset.ready = '';
   observe();
+  window.addEventListener('scroll', updateVisibility, { passive: true });
   window.addEventListener('resize', observe);
 }
