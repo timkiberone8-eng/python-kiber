@@ -6,6 +6,10 @@ main:has(.session-notes) {
   position: relative;
 }
 
+body:has(.session-notes) > .theme {
+  z-index: 3;
+}
+
 .session-notes section[id] {
   display: flow-root;
   padding-block: 20px 12px;
