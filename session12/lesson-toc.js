@@ -20,7 +20,7 @@ for (const nav of document.querySelectorAll('[data-lesson-toc]')) {
     if (y < 56) {
       nav.removeAttribute('data-shown');
     } else if (Math.abs(y - scrollAnchor) >= 12) {
-      nav.toggleAttribute('data-shown', y > scrollAnchor);
+      nav.toggleAttribute('data-shown', y < scrollAnchor);
     } else {
       return;
     }
